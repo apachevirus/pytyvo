@@ -13,7 +13,7 @@ $route_parts = array_slice($route_parts, 0);
 
 $chosen_route = 'views/404.php';
 
-if ($route_parts[0] == 'accounting') {
+if ($route_parts[0] == 'pytyvo') {
     if (count($route_parts) == 1) {
         $chosen_route = 'views/home.php';
     } else if (count($route_parts) == 2) {

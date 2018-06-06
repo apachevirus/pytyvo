@@ -7,7 +7,7 @@ define('PASSWORD', '');
 define('DATABASE_NAME', 'accounting');
 
 // Web routes.
-define('SERVER', 'http://localhost/accounting');
+define('SERVER', 'http://localhost/pytyvo');
 define('ROUTE_SIGNIN', SERVER . '/signin');
 define('ROUTE_SIGNOUT', SERVER . '/signout');
 define('ROUTE_SIGNUP', SERVER . '/signup');
