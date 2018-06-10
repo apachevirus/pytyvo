@@ -2,9 +2,22 @@
 include_once 'app/config.inc.php';
 include_once 'app/SessionControl.inc.php';
 include_once 'app/Redirection.inc.php';
+include_once 'app/Connection.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
+}
+
+if (isset($_POST['save'])) {
+    Connection::connect();
+
+    $validator = new CountryValidator(
+        Connection::get_connection(),
+        $_POST['id'],
+        $_POST['name'],
+        $_POST['area_code'],
+        $_POST['active']
+    );
 }
 
 $title = 'Nuevo pa&#237;s';
