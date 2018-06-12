@@ -43,14 +43,3 @@ body {
 .breadcrumb-item+ .breadcrumb-item::before {
     content: "›";
 }
-
-/*.table>thead>tr>th {
-    border: none;
-}*/
-
-/*tbody:before {
-    content: "-";
-    display: block;
-    line-height: 2em;
-    color: transparent !important;
-}*/

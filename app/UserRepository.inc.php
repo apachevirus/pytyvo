@@ -83,16 +83,16 @@ class UserRepository {
                 $stmt->bindParam(':email', $email, PDO::PARAM_STR);
                 $stmt->bindParam(':admin', $admin, PDO::PARAM_BOOL);
                 $stmt->bindParam(':active', $active, PDO::PARAM_BOOL);
-                
+
                 $user_inserted = $stmt->execute();
             } catch (PDOException $ex) {
                 print 'ERROR: ' . $ex->getMessage() . '<br>';
             }
         }
-        
+
         return $user_inserted;
     }
-    
+
     public static function name_exists($connection, $name) {
         $name_exists = true;
 
@@ -105,7 +105,7 @@ class UserRepository {
                 $stmt->execute();
 
                 $result = $stmt->fetch();
-                
+
                 if (!$result['name_exists']) {
                     $name_exists = false;
                 }
@@ -129,9 +129,9 @@ class UserRepository {
                 $stmt->execute();
 
                 $result = $stmt->fetch();
-                
+
                 if (!$result['username_exists']) {
-                    $username_exists = false;                    
+                    $username_exists = false;
                 }
             } catch (PDOException $ex) {
                 print 'ERROR: ' . $ex->getMessage() . '<br>';
@@ -153,9 +153,9 @@ class UserRepository {
                 $stmt->execute();
 
                 $result = $stmt->fetch();
-                
+
                 if (!$result['email_exists']) {
-                    $email_exists = false;                    
+                    $email_exists = false;
                 }
             } catch (PDOException $ex) {
                 print 'ERROR: ' . $ex->getMessage() . '<br>';

@@ -597,7 +597,7 @@ BEGIN
         updated_at
     FROM
         users
-    ORDER BY 
+    ORDER BY
         name;
 END $$
 
@@ -920,8 +920,8 @@ BEGIN
     FROM
         families
     WHERE
-        company_id = p_company_id 
-    ORDER BY 
+        company_id = p_company_id
+    ORDER BY
         name;
 END $$
 
@@ -953,7 +953,7 @@ BEGIN
     WHERE
         company_id = p_company_id AND
         active = 1
-    ORDER BY 
+    ORDER BY
         name;
 END $$
 
@@ -986,7 +986,7 @@ BEGIN
     WHERE
         company_id = p_company_id AND
         id = p_id
-    ORDER BY 
+    ORDER BY
         name;
 END $$
 
@@ -1019,7 +1019,7 @@ BEGIN
     WHERE
         company_id = p_company_id AND
         name LIKE p_name
-    ORDER BY 
+    ORDER BY
         name;
 END $$
 
@@ -3917,8 +3917,8 @@ BEGIN
     FROM
         suppliers
     WHERE
-        company_id = p_company_id 
-    ORDER BY 
+        company_id = p_company_id
+    ORDER BY
         name;
 END $$
 
@@ -3983,7 +3983,7 @@ BEGIN
     WHERE
         company_id = p_company_id AND
         active = 1
-    ORDER BY 
+    ORDER BY
         name;
 END $$
 
@@ -4049,7 +4049,7 @@ BEGIN
     WHERE
         company_id = p_company_id AND
         id = p_id
-    ORDER BY 
+    ORDER BY
         name;
 END $$
 
@@ -4115,7 +4115,7 @@ BEGIN
     WHERE
         company_id = p_company_id AND
         name LIKE p_name
-    ORDER BY 
+    ORDER BY
         name;
 END $$
 

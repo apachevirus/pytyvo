@@ -16,17 +16,9 @@ include_once 'app/SessionControl.inc.php';
                 <?php
                 if (isset($_SESSION['company_name']) && !empty($_SESSION['company_name'])) {
                     ?>
-                    <a class="nav-link small" href="#" data-toggle="tooltip" data-placement="bottom" title="<?php echo 'Empresa: ' . $_SESSION['company_name']; ?>">
+                    <a class="nav-link" href="#" data-toggle="tooltip" data-placement="bottom" title="<?php echo 'Empresa: ' . $_SESSION['company_name']; ?>">
                         <i class="fas fa-building"></i>
-                        <?php
-                        /*
-                        $company_name = mb_convert_case($_SESSION['company_name'], MB_CASE_TITLE, 'UTF-8');
-                        $company_name = str_ireplace('s.r.l', 'S.R.L', $company_name);
-                        $company_name = str_ireplace('s.a', 'S.A', $company_name);
-                        echo '&nbsp;' . $company_name;
-                        */
-                        echo '&nbsp;' . $_SESSION['company_name'];
-                        ?>
+                        <?php echo '&#160;' . $_SESSION['company_name']; ?>
                     </a>
                     <?php
                 } else {
@@ -43,13 +35,13 @@ include_once 'app/SessionControl.inc.php';
             if (SessionControl::session_started()) {
                 ?>
                 <li class="nav-item">
-                    <a class="nav-link small" href="#" data-toggle="tooltip" data-placement="bottom" title="<?php echo 'Usuario: ' . $_SESSION['user_name']; ?>">
+                    <a class="nav-link" href="#" data-toggle="tooltip" data-placement="bottom" title="<?php echo 'Usuario: ' . $_SESSION['user_name']; ?>">
                         <i class="fas fa-user"></i>
                         <?php
                         if (strpos($_SESSION['user_name'], ' ')) {
-                            echo '&nbsp;' . mb_convert_case(substr($_SESSION['user_name'], 0, strpos($_SESSION['user_name'], ' ')), MB_CASE_TITLE, 'UTF-8');
+                            echo '&#160;' . mb_convert_case(substr($_SESSION['user_name'], 0, strpos($_SESSION['user_name'], ' ')), MB_CASE_UPPER, 'UTF-8');
                         } else {
-                            echo '&nbsp;' . mb_convert_case($_SESSION['user_name'], MB_CASE_TITLE, 'UTF-8');
+                            echo '&#160;' . mb_convert_case($_SESSION['user_name'], MB_CASE_UPPER, 'UTF-8');
                         }
                         ?>
                     </a>
@@ -58,7 +50,7 @@ include_once 'app/SessionControl.inc.php';
             }
             ?>
             <li class="nav-item">
-                <a class="nav-link small" href="<?php echo ROUTE_SIGNOUT; ?>">
+                <a class="nav-link" href="<?php echo ROUTE_SIGNOUT; ?>">
                     <i class="fas fa-sign-out-alt"></i> CERRAR SESI&#211;N
                 </a>
             </li>

@@ -1,7 +1,6 @@
 <?php
-session_start();
 
-//include_once 'app/config.inc.php';
+session_start();
 
 $url_components = parse_url($_SERVER['REQUEST_URI']);
 

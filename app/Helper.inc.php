@@ -1,7 +1,7 @@
 <?php
 
 class Helper {
-    
+
     public static function RemoveAccents($string) {
         $string = str_replace('á', '&#225;', $string);
         $string = str_replace('é', '&#233;', $string);

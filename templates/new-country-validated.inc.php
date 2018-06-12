@@ -1,5 +1,9 @@
 <input type="hidden" name="id" <?php $validator->show_id(); ?>>
 <div class="form-group">
+    <?php $validator->show_error_company_id(); ?>
+    <?php $validator->show_error_id(); ?>
+</div>
+<div class="form-group">
     <label for="inputName">Nombre<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
     <input type="text" class="form-control" id="inputName" name="name" maxlength="50" style="text-transform: uppercase;" placeholder="" <?php $validator->show_name(); ?> required autofocus>
     <?php $validator->show_error_name(); ?>
@@ -10,7 +14,9 @@
     <?php $validator->show_error_area_code(); ?>
 </div>
 <div class="form-check mb-3">
-    <input type="checkbox" class="form-check-input" id="checkActive" name="active" checked>
+    <input type="checkbox" class="form-check-input" id="checkActive" name="active" <?php $validator->show_active(); ?>>
     <label class="form-check-label" for="checkActive">Vigente</label>
+</div>
+<div class="form-group">
     <?php $validator->show_error_active(); ?>
 </div>

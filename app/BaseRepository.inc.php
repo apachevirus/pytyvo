@@ -3,8 +3,13 @@
 abstract class BaseRepository {
 
     protected static $table;
+    protected static $sql_exception;
 
-    public static function get_reccount($connection) {
+    public static function get_sql_exception() {
+        return static::$sql_exception;
+    }
+
+    public static function get_reccount($connection, $company_id) {
         $reccount = null;
 
         if (isset($connection)) {
@@ -12,7 +17,7 @@ abstract class BaseRepository {
                 $sql = 'SELECT fn_' . static::$table . '_reccount(:company_id) reccount';
 
                 $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->execute();
 
                 $result = $stmt->fetch();
@@ -26,7 +31,7 @@ abstract class BaseRepository {
         return $reccount;
     }
 
-    public static function id_exists($connection, $id) {
+    public static function id_exists($connection, $company_id, $id) {
         $id_exists = true;
 
         if (isset($connection)) {
@@ -35,7 +40,7 @@ abstract class BaseRepository {
 
                 $stmt = $connection->prepare($sql);
 
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
                 $stmt->execute();
@@ -53,7 +58,7 @@ abstract class BaseRepository {
         return $id_exists;
     }
 
-    public static function name_exists($connection, $name) {
+    public static function name_exists($connection, $company_id, $name) {
         $name_exists = true;
 
         if (isset($connection)) {
@@ -62,7 +67,7 @@ abstract class BaseRepository {
 
                 $stmt = $connection->prepare($sql);
 
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->bindParam(':name', $name, PDO::PARAM_STR);
 
                 $stmt->execute();
@@ -80,7 +85,7 @@ abstract class BaseRepository {
         return $name_exists;
     }
 
-    public static function is_active($connection, $id) {
+    public static function is_active($connection, $company_id, $id) {
         $is_active = false;
 
         if (isset($connection)) {
@@ -89,7 +94,7 @@ abstract class BaseRepository {
 
                 $stmt = $connection->prepare($sql);
 
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
                 $stmt->execute();
@@ -107,7 +112,7 @@ abstract class BaseRepository {
         return $is_active;
     }
 
-    public static function new_id($connection) {
+    public static function new_id($connection, $company_id) {
         $new_id = null;
 
         if (isset($connection)) {
@@ -115,11 +120,11 @@ abstract class BaseRepository {
                 $sql = 'SELECT fn_' . static::$table . '_new_id(:company_id) new_id';
 
                 $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->execute();
 
                 $result = $stmt->fetch();
- 
+
                 $new_id = $result['new_id'];
             } catch (PDOException $ex) {
                 print 'ERROR: ' . $ex->getMessage() . '<br>';
@@ -129,7 +134,7 @@ abstract class BaseRepository {
         return $new_id;
     }
 
-    public static function get_all($connection) {
+    public static function get_all($connection, $company_id) {
         $results = array();
 
         if (isset($connection)) {
@@ -137,7 +142,7 @@ abstract class BaseRepository {
                 $sql = 'CALL sp_' . static::$table . '_get_all(:company_id)';
 
                 $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->execute();
 
                 $results = $stmt->fetchAll();
@@ -149,7 +154,7 @@ abstract class BaseRepository {
         return $results;
     }
 
-    public static function get_all_active($connection) {
+    public static function get_all_active($connection, $company_id) {
         $results = array();
 
         if (isset($connection)) {
@@ -157,7 +162,7 @@ abstract class BaseRepository {
                 $sql = 'CALL sp_' . static::$table . '_get_all_active(:company_id)';
 
                 $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->execute();
 
                 $results = $stmt->fetchAll();
@@ -169,7 +174,7 @@ abstract class BaseRepository {
         return $results;
     }
 
-    public static function get_by_id($connection, $id) {
+    public static function get_by_id($connection, $company_id, $id) {
         $result = null;
 
         if (isset($connection)) {
@@ -178,7 +183,7 @@ abstract class BaseRepository {
 
                 $stmt = $connection->prepare($sql);
 
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
                 $stmt->execute();
@@ -192,7 +197,7 @@ abstract class BaseRepository {
         return $result;
     }
 
-    public static function get_by_name($connection, $name) {
+    public static function get_by_name($connection, $company_id, $name) {
         $results = array();
 
         if (isset($connection)) {
@@ -201,7 +206,7 @@ abstract class BaseRepository {
 
                 $stmt = $connection->prepare($sql);
 
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->bindParam(':name', $name, PDO::PARAM_STR);
 
                 $stmt->execute();
@@ -215,7 +220,7 @@ abstract class BaseRepository {
         return $results;
     }
 
-    public static function delete($connection, $id) {
+    public static function delete($connection, $user_id, $company_id, $id) {
         $deleted = false;
 
         if (isset($connection)) {
@@ -224,8 +229,8 @@ abstract class BaseRepository {
 
                 $stmt = $connection->prepare($sql);
 
-                $stmt->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
-                $stmt->bindParam(':company_id', $_SESSION['company_id'], PDO::PARAM_INT);
+                $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
                 $deleted = $stmt->execute();

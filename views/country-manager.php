@@ -10,8 +10,8 @@ if (!SessionControl::session_started()) {
 }
 
 Connection::connect();
-$total_countries = CountryRepository::get_reccount(Connection::get_connection());
-$countries = CountryRepository::get_all(Connection::get_connection());
+$total_countries = CountryRepository::get_reccount(Connection::get_connection(), $_SESSION['company_id']);
+$countries = CountryRepository::get_all(Connection::get_connection(), $_SESSION['company_id']);
 Connection::disconnect();
 
 $title = 'Gesti&#243;n de pa&#237;ses';
@@ -56,7 +56,7 @@ include_once 'templates/navbar.inc.php';
             <?php
             if (count($countries) > 0) {
                 ?>
-                <table class="table table-striped">
+                <table class="table table-hover">
                     <thead>
                         <tr>
                             <th class="text-center">C&#243;digo</th>
@@ -106,7 +106,7 @@ include_once 'templates/navbar.inc.php';
                 <hr>
                 <h4 class="text-center">No hay datos para mostrar.</h4>
                 <?php
-            }    
+            }
             ?>
         </div>
     </div>

@@ -5,5 +5,6 @@
 
         <script src="<?php echo ROUTE_JS ?>jquery.min.js"></script>
         <script src="<?php echo ROUTE_JS ?>bootstrap.min.js"></script>
+        <script src="<?php echo ROUTE_JS ?>scripts.js"></script>
     </body>
 </html>
