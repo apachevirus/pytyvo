@@ -24,4 +24,23 @@ class Utils {
         return mb_convert_case($string, MB_CASE_TITLE, 'UTF-8');
     }
 
+    public static function replace_by_entity_number($string) {
+        $string = str_replace('á', '&#225;', $string);
+        $string = str_replace('é', '&#233;', $string);
+        $string = str_replace('í', '&#237;', $string);
+        $string = str_replace('ó', '&#243;', $string);
+        $string = str_replace('ú', '&#250;', $string);
+        $string = str_replace('ñ', '&#241;', $string);
+
+        return $string;
+    }
+
+    public static function base64_url_encode($string) {
+        return strtr(base64_encode($string), '+/=', '-_,');
+    }
+
+    public static function base64_url_decode($string) {
+        return base64_decode(strtr($string, '-_,', '+/='));
+    }
+
 }

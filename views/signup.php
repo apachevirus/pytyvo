@@ -1,10 +1,10 @@
 <?php
-include_once 'app/config.inc.php';
-include_once 'app/Connection.inc.php';
+include_once 'app/core/config.inc.php';
+include_once 'app/core/Connection.inc.php';
+include_once 'app/core/Redirection.inc.php';
 include_once 'app/User.inc.php';
 include_once 'app/UserRepository.inc.php';
 include_once 'app/SignupValidator.inc.php';
-include_once 'app/Redirection.inc.php';
 
 if (isset($_POST['submit'])) {
     Connection::connect();

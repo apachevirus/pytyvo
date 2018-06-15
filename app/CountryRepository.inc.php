@@ -1,6 +1,6 @@
 <?php
 
-include_once 'app/BaseRepository.inc.php';
+include_once 'app/core/BaseRepository.inc.php';
 include_once 'app/Country.inc.php';
 
 class CountryRepository extends BaseRepository {

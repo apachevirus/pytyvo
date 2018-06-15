@@ -1,8 +1,8 @@
 <?php
-include_once 'app/config.inc.php';
-include_once 'app/SessionControl.inc.php';
-include_once 'app/Redirection.inc.php';
-include_once 'app/Connection.inc.php';
+include_once 'app/core/config.inc.php';
+include_once 'app/core/SessionControl.inc.php';
+include_once 'app/core/Redirection.inc.php';
+include_once 'app/core/Connection.inc.php';
 include_once 'app/CountryValidator.inc.php';
 include_once 'app/Country.inc.php';
 
@@ -77,8 +77,8 @@ if (isset($_POST['save']) && isset($country_inserted)) {
             <div class="modal-dialog">
                 <div class="modal-content">
                     <!-- Modal header -->
-                    <div class="modal-header alert-danger">
-                        <h5 class="modal-title">No se pudo completar la solicitud &#160;<i class="icofont icofont-emo-sad"></i></h5>
+                    <div class="modal-header alert-info">
+                        <h5 class="modal-title">¡Atenci&#243;n!</h5>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
                     <!-- Modal body -->
@@ -96,7 +96,7 @@ if (isset($_POST['save']) && isset($country_inserted)) {
     }
 }
 ?>
-<!-- end: SQL exception modal-->
+<!-- end: SQL exception modal -->
 
 <div class="container">
     <div class="row pl-5 pr-5">
@@ -107,6 +107,21 @@ if (isset($_POST['save']) && isset($country_inserted)) {
                 <h4><b>Nuevo pa&#237;s</b></h4>
             </div>
             <div class="card-body">
+                <!-- begin: SQL exception -->
+                <?php
+                if (isset($_POST['save']) && isset($country_inserted)) {
+                    $sql_exception = CountryRepository::get_sql_exception();
+
+                    if (isset($sql_exception)) {
+                        ?>
+                        <div class="alert alert-info" role="alert">
+                            <?php echo $sql_exception; ?>
+                        </div>
+                        <?php
+                    }
+                }
+                ?>
+                <!-- end: SQL exception -->
                 <form class="form" role="form" autocomplete="off" method="post" enctype="application/x-www-form-urlencoded" action="<?php echo ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_NEW_COUNTRY; ?>">
                     <input type="hidden" name="authenticity_token" value="<?php echo $_SESSION['token']; ?>">
                     <?php

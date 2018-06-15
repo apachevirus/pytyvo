@@ -21,7 +21,7 @@ if ($route_parts[0] == 'pytyvo') {
                 $chosen_route = 'views/signin.php';
                 break;
             case 'signout':
-                $chosen_route = 'views/signout.php';
+                $chosen_route = 'app/core/signout.php';
                 break;
             case 'signup':
                 $chosen_route = 'views/signup.php';
@@ -88,6 +88,9 @@ if ($route_parts[0] == 'pytyvo') {
                                         switch ($route_parts[5]) {
                                             case 'new-country':
                                                 $chosen_route = 'views/new-country.php';
+                                                break;
+                                            case 'view-country':
+                                                $chosen_route = 'views/view-country.php';
                                                 break;
                                         }
                                         break;

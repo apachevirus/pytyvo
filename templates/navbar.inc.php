@@ -1,6 +1,6 @@
 <?php
-include_once 'app/config.inc.php';
-include_once 'app/SessionControl.inc.php';
+include_once 'app/core/config.inc.php';
+include_once 'app/core/SessionControl.inc.php';
 ?>
 
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">

@@ -1,7 +1,7 @@
 <?php
 header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found', true, 404);
 
-include_once 'app/config.inc.php';
+include_once 'app/core/config.inc.php';
 
 $title = '404 - Página no encontrada';
 

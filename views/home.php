@@ -1,7 +1,7 @@
 <?php
-include_once 'app/config.inc.php';
-include_once 'app/SessionControl.inc.php';
-include_once 'app/Redirection.inc.php';
+include_once 'app/core/config.inc.php';
+include_once 'app/core/SessionControl.inc.php';
+include_once 'app/core/Redirection.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);

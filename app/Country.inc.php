@@ -1,6 +1,6 @@
 <?php
 
-include_once 'app/BaseModel.inc.php';
+include_once 'app/core/BaseModel.inc.php';
 
 class Country extends BaseModel {
 

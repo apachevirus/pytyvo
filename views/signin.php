@@ -1,8 +1,8 @@
 <?php
-include_once 'app/config.inc.php';
-include_once 'app/SessionControl.inc.php';
-include_once 'app/Redirection.inc.php';
-include_once 'app/Connection.inc.php';
+include_once 'app/core/config.inc.php';
+include_once 'app/core/SessionControl.inc.php';
+include_once 'app/core/Redirection.inc.php';
+include_once 'app/core/Connection.inc.php';
 include_once 'app/SigninValidator.inc.php';
 include_once 'app/CompanyRepository.inc.php';
 

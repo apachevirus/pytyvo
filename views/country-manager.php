@@ -1,8 +1,8 @@
 <?php
-include_once 'app/config.inc.php';
-include_once 'app/SessionControl.inc.php';
-include_once 'app/Redirection.inc.php';
-include_once 'app/Connection.inc.php';
+include_once 'app/core/config.inc.php';
+include_once 'app/core/SessionControl.inc.php';
+include_once 'app/core/Redirection.inc.php';
+include_once 'app/core/Connection.inc.php';
 include_once 'app/CountryRepository.inc.php';
 
 if (!SessionControl::session_started()) {
@@ -35,17 +35,23 @@ include_once 'templates/navbar.inc.php';
 <div class="container rounded pt-3" style="background: white;">
     <!-- begin: Header -->
     <div class="row mb-5">
-        <div class="col-md-12">
-            <h2>
+        <div class="col-md-6">
+            <h1>
                 <i class="icofont icofont-earth"></i> Pa&#237;ses
                 <span class="badge badge-secondary" style="font-size: 0.75rem; vertical-align: middle;" title="Cantidad de registros"><?php echo $total_countries; ?></span>
                 <a class="btn btn-outline-secondary btn-sm" role="button" href="<?php echo ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY; ?>" title="Recargar la p&#225;gina">
                     <span class="icofont icofont-refresh"></span>
                 </a>
-            </h2>
-            <a href="<?php echo ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_NEW_COUNTRY; ?>" class="btn btn-success btn-sm mt-3" role="button" id="btn-new-country" title="Crear un nuevo registro">
+            </h1>
+            <a href="<?php echo ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_NEW_COUNTRY; ?>" class="btn btn-success mt-3" role="button" id="btn-new-country" title="Crear un nuevo registro">
                 <i class="icofont icofont-plus"></i> Nuevo
             </a>
+        </div>
+        <div class="col-md-6">
+            <form class="form-inline mt-2 mt-md-2 float-right">
+                <input type="text" class="form-control mr-sm-2" id="inputSearch" name="search" maxlength="50" placeholder="Buscar..." aria-label="Buscar">
+                <button type="submit" class="btn btn-outline-secondary my-2 my-sm-0" name="btn-search" title="Buscar">Buscar</button>
+            </form>
         </div>
     </div>
     <!-- end: Header -->
@@ -77,20 +83,20 @@ include_once 'templates/navbar.inc.php';
                                 <td><?php echo $country->get_name(); ?></td>
                                 <td class="text-center"><?php if ($country->is_active()) echo 'S&#237;'; else echo 'No'; ?></td>
                                 <td class="text-right">
-                                    <form method="post" action="">
-                                        <input type="hidden" name="id-to-view" value="<?php echo $country->get_id(); ?>">
+                                    <form method="post" action="<?php echo ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_VIEW_COUNTRY; ?>">
+                                        <input type="hidden" name="id" value="<?php echo $country->get_id(); ?>">
                                         <button type="submit" class="btn btn-outline-secondary btn-sm" name="btn-view-country" title="Ver"><i class="far fa-eye"></i></button>
                                     </form>
                                 </td>
                                 <td class="text-center">
                                     <form method="post" action="">
-                                        <input type="hidden" name="id-to-edit" value="<?php echo $country->get_id(); ?>">
+                                        <input type="hidden" name="id" value="<?php echo $country->get_id(); ?>">
                                         <button type="submit" class="btn btn-outline-secondary btn-sm" name="btn-edit-country" title="Editar"><i class="fas fa-edit"></i></button>
                                     </form>
                                 </td>
                                 <td class="text-left">
                                     <form method="post" action="">
-                                        <input type="hidden" name="id-to-delete" value="<?php echo $country->get_id(); ?>">
+                                        <input type="hidden" name="id" value="<?php echo $country->get_id(); ?>">
                                         <button type="submit" class="btn btn-outline-danger btn-sm" name="btn-delete-country" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                                     </form>
                                 </td>
