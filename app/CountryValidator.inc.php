@@ -43,7 +43,7 @@ class CountryValidator extends BaseValidator {
 
             if (count($results)) {
                 foreach ($results as $row) {
-                    if ($row['id'] !== $this->id) {
+                    if ((int) $row->get_id() !== $this->id) {
                         return 'Este prefijo telef&#243;nico ya est&#225; en uso. Elige otro.';
                     }
                 }

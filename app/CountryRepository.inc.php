@@ -120,6 +120,80 @@ class CountryRepository extends BaseRepository {
         return $countries;
     }
 
+    public static function get_by_area_code($connection, $company_id, $area_code) {
+        $countries = array();
+
+        if (isset($connection)) {
+            try {
+                $sql = 'CALL sp_' . static::$table . '_get_by_area_code(:company_id, :area_code)';
+
+                $stmt = $connection->prepare($sql);
+
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+                $stmt->bindParam(':area_code', $area_code, PDO::PARAM_STR);
+
+                $stmt->execute();
+
+                $results = $stmt->fetchAll();
+
+                if (count($results)) {
+                    foreach ($results as $row) {
+                        $countries[] = new Country(
+                            $row['company_id'],
+                            $row['id'],
+                            $row['name'],
+                            $row['area_code'],
+                            $row['active'],
+                            $row['created_at'],
+                            $row['updated_at']
+                        );
+                    }
+                }
+            } catch (PDOException $ex) {
+                print 'ERROR: ' . $ex->getMessage() . '<br>';
+            }
+        }
+
+        return $countries;
+    }
+
+    public static function get_by_any($connection, $company_id, $any) {
+        $countries = array();
+
+        if (isset($connection)) {
+            try {
+                $sql = 'CALL sp_' . static::$table . '_get_by_any(:company_id, :any)';
+
+                $stmt = $connection->prepare($sql);
+
+                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+                $stmt->bindParam(':any', $any, PDO::PARAM_STR);
+
+                $stmt->execute();
+
+                $results = $stmt->fetchAll();
+
+                if (count($results)) {
+                    foreach ($results as $row) {
+                        $countries[] = new Country(
+                            $row['company_id'],
+                            $row['id'],
+                            $row['name'],
+                            $row['area_code'],
+                            $row['active'],
+                            $row['created_at'],
+                            $row['updated_at']
+                        );
+                    }
+                }
+            } catch (PDOException $ex) {
+                print 'ERROR: ' . $ex->getMessage() . '<br>';
+            }
+        }
+
+        return $countries;
+    }
+
     public static function insert($connection, $user_id, $country) {
         $country_inserted = false;
 
@@ -149,7 +223,6 @@ class CountryRepository extends BaseRepository {
                     print 'ERROR: ' . $ex->getMessage() . '<br>';
                     print 'ERROR: ' . $ex->getCode() . gettype($ex->getCode()). '<br>';
                 }
-
             }
         }
 
@@ -180,7 +253,13 @@ class CountryRepository extends BaseRepository {
 
                 $country_updated = $stmt->execute();
             } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
+                if ($ex->getCode() == '45000') {
+                    $pdo_exception = explode('│', $ex->getMessage());
+                    static::$sql_exception = $pdo_exception[1];
+                } else {
+                    print 'ERROR: ' . $ex->getMessage() . '<br>';
+                    print 'ERROR: ' . $ex->getCode() . gettype($ex->getCode()). '<br>';
+                }
             }
         }
 

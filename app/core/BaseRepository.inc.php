@@ -202,7 +202,7 @@ abstract class BaseRepository {
 
         if (isset($connection)) {
             try {
-                $sql = 'CALL sp_' . static::$table . '_by_name(:company_id, :name)';
+                $sql = 'CALL sp_' . static::$table . '_get_by_name(:company_id, :name)';
 
                 $stmt = $connection->prepare($sql);
 
@@ -235,7 +235,13 @@ abstract class BaseRepository {
 
                 $deleted = $stmt->execute();
             } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
+                if ($ex->getCode() == '45000') {
+                    $pdo_exception = explode('│', $ex->getMessage());
+                    static::$sql_exception = $pdo_exception[1];
+                } else {
+                    print 'ERROR: ' . $ex->getMessage() . '<br>';
+                    print 'ERROR: ' . $ex->getCode() . gettype($ex->getCode()). '<br>';
+                }
             }
         }
 

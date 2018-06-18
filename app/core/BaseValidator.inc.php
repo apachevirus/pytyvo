@@ -95,7 +95,7 @@ abstract class BaseValidator {
 
             if (count($results)) {
                 foreach ($results as $row) {
-                    if ($row['id'] !== $this->id) {
+                    if ((int) $row->get_id() !== $this->id) {
                         return 'Este nombre ya est&#225; en uso. Elige otro.';
                     }
                 }

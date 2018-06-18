@@ -421,7 +421,7 @@ END $$
 DELIMITER ;
 
 /* -------------------------------------------------------------------------- *
- * FN to find out if a user can insert data into a table.                     *
+ * FN to find out if a user can update data into a table.                     *
  * -------------------------------------------------------------------------- */
 DELIMITER $$
 
@@ -443,6 +443,37 @@ BEGIN
         user_id = p_user_id AND
         program LIKE p_program AND
         modify = 1
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to find out if a user can delete data from a table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_user_can_delete $$
+
+CREATE FUNCTION fn_user_can_delete(p_company_id MEDIUMINT UNSIGNED,
+                                   p_user_id MEDIUMINT UNSIGNED,
+                                   p_program VARCHAR(50))
+       RETURNS TINYINT UNSIGNED
+BEGIN
+    DECLARE v_row TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*)
+    FROM
+        user_privileges
+    WHERE
+        company_id = p_company_id AND
+        user_id = p_user_id AND
+        program LIKE p_program AND
+        remove = 1
     INTO
         v_row;
 
@@ -568,9 +599,24 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Empresa: No está activa para el usuario.│';
     END IF;
 
-    IF NOT (SELECT fn_user_can_insert(p_company_id, p_user_id, p_repository)) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Usuario: No tiene permiso para agregar registros.│';
-    END IF;
+    CASE p_privilege
+    WHEN 'create' THEN
+        IF NOT (SELECT fn_user_can_insert(p_company_id, p_user_id, p_repository)) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Usuario: No tiene permiso para agregar nuevos registros.│';
+        END IF;
+    WHEN 'read' THEN
+        IF NOT (SELECT fn_user_can_select(p_company_id, p_user_id, p_repository)) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Usuario: No tiene permiso para recuperar registros.│';
+        END IF;
+    WHEN 'write' THEN
+        IF NOT (SELECT fn_user_can_update(p_company_id, p_user_id, p_repository)) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Usuario: No tiene permiso para editar registros.│';
+        END IF;
+    WHEN 'delete' THEN
+        IF NOT (SELECT fn_user_can_delete(p_company_id, p_user_id, p_repository)) THEN
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Usuario: No tiene permiso para eliminar registros.│';
+        END IF;
+    END CASE;
 END $$
 
 DELIMITER ;
@@ -3136,6 +3182,46 @@ CREATE PROCEDURE sp_country_get_by_name(IN p_company_id MEDIUMINT UNSIGNED,
                                         IN p_name VARCHAR(50))
 BEGIN
     SELECT * FROM countries WHERE company_id = p_company_id AND name LIKE p_name ORDER BY name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by area_code from the 'countries' table.                    *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_country_get_by_area_code $$
+
+CREATE PROCEDURE sp_country_get_by_area_code(IN p_company_id MEDIUMINT UNSIGNED,
+                                             IN p_area_code VARCHAR(5))
+BEGIN
+    SELECT * FROM countries WHERE company_id = p_company_id AND area_code LIKE p_area_code ORDER BY name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'countries' table.                    *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_country_get_by_any $$
+
+CREATE PROCEDURE sp_country_get_by_any(IN p_company_id MEDIUMINT UNSIGNED,
+                                       IN p_any VARCHAR(50))
+BEGIN
+    SELECT
+        *
+    FROM
+        countries
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any OR
+        area_code LIKE p_any)
+    ORDER BY
+        name;
 END $$
 
 DELIMITER ;

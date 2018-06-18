@@ -66,7 +66,7 @@ if ($route_parts[0] == 'pytyvo') {
                         switch ($route_parts[3]) {
                             case 'general':
                                 switch ($route_parts[4]) {
-                                    case 'country':
+                                    case 'country-manager':
                                         $chosen_route = 'views/country-manager.php';
                                         break;
                                 }
@@ -84,15 +84,11 @@ if ($route_parts[0] == 'pytyvo') {
                         switch ($route_parts[3]) {
                             case 'general':
                                 switch ($route_parts[4]) {
-                                    case 'country':
+                                    case 'country-manager':
                                         switch ($route_parts[5]) {
-                                            case 'new-country':
-                                                $chosen_route = 'views/new-country.php';
-                                                break;
-                                            case 'view-country':
-                                                $chosen_route = 'views/view-country.php';
-                                                break;
-                                        }
+                                            case 'maintain':
+                                                $chosen_route = 'views/country.php';
+                                                break;                                        }
                                         break;
                                 }
                                 break;

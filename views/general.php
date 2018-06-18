@@ -27,7 +27,7 @@ include_once 'templates/navbar.inc.php';
                 <i class="far fa-window-maximize" style="font-size: 1.5rem;"></i>
                 <span>Usuarios</span>
             </a>
-            <a class="quick-btn" href="<?php echo ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY; ?>">
+            <a class="quick-btn" href="<?php echo ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MANAGER; ?>">
                 <i class="far fa-window-maximize" style="font-size: 1.5rem;"></i>
                 <span>Pa&#237;ses</span>
             </a>

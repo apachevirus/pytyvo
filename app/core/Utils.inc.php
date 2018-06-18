@@ -43,4 +43,14 @@ class Utils {
         return base64_decode(strtr($string, '-_,', '+/='));
     }
 
+    public static function prepare_for_search($string) {
+        $string = self::alltrim(self::upper($string));
+
+        if ($string !== '') {
+            $string = '%' . $string . '%';
+        }
+
+        return $string;
+    }
+
 }
