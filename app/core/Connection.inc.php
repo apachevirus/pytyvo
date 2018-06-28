@@ -1,5 +1,4 @@
 <?php
-
 include_once 'app/core/config.inc.php';
 
 class Connection {
@@ -30,3 +29,4 @@ class Connection {
     }
 
 }
+?>

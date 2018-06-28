@@ -1,5 +1,4 @@
 <?php
-
 abstract class BaseModel {
 
     protected $company_id;
@@ -51,3 +50,4 @@ abstract class BaseModel {
     }
 
 }
+?>

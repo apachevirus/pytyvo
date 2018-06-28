@@ -1,5 +1,4 @@
 <?php
-
 class Redirection {
 
     public static function redirect($url) {
@@ -8,3 +7,4 @@ class Redirection {
     }
 
 }
+?>

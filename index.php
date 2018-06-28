@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 $url_components = parse_url($_SERVER['REQUEST_URI']);
@@ -10,7 +9,7 @@ $route_parts = explode('/', $route);
 $route_parts = array_filter($route_parts);
 $route_parts = array_slice($route_parts, 0);
 
-$chosen_route = 'views/404.php';
+$chosen_route = 'app/modules/system/view/404.php';
 
 if ($route_parts[0] == 'pytyvo') {
     if (count($route_parts) == 1) {
@@ -53,6 +52,9 @@ if ($route_parts[0] == 'pytyvo') {
                             case 'general':
                                 $chosen_route = 'views/general.php';
                                 break;
+                            case 'inventory':
+                                $chosen_route = 'app/modules/system/view/inventory.php';
+                                break;
                         }
                         break;
                 }
@@ -68,6 +70,13 @@ if ($route_parts[0] == 'pytyvo') {
                                 switch ($route_parts[4]) {
                                     case 'country-manager':
                                         $chosen_route = 'views/country-manager.php';
+                                        break;
+                                }
+                                break;
+                            case 'inventory':
+                                switch ($route_parts[4]) {
+                                    case 'brand-manager':
+                                        $chosen_route = 'app/modules/brand/controller/manager.php';
                                         break;
                                 }
                                 break;
@@ -88,7 +97,19 @@ if ($route_parts[0] == 'pytyvo') {
                                         switch ($route_parts[5]) {
                                             case 'maintain':
                                                 $chosen_route = 'views/country.php';
-                                                break;                                        }
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case 'inventory':
+                                switch ($route_parts[4]) {
+                                    case 'brand-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'maintain':
+                                                $chosen_route = 'app/modules/brand/controller/maintain.php';
+                                                break;
+                                        }
                                         break;
                                 }
                                 break;
@@ -98,6 +119,41 @@ if ($route_parts[0] == 'pytyvo') {
                 break;
         }
     } else if (count($route_parts) == 7) {
+        switch ($route_parts[1]) {
+            case 'administration':
+                switch ($route_parts[2]) {
+                    case 'setup':
+                        switch ($route_parts[3]) {
+                            case 'general':
+                                switch ($route_parts[4]) {
+                                    case 'country-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'page':
+                                                $page = (int) $route_parts[6];
+                                                $chosen_route = 'views/country-manager.php';
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case 'inventory':
+                                switch ($route_parts[4]) {
+                                    case 'brand-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'page':
+                                                $page = (int) $route_parts[6];
+                                                $chosen_route = 'app/modules/brand/controller/manager.php';
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                        }
+                        break;
+                }
+                break;
+        }
+    } else if (count($route_parts) == 8) {
 
     }
 }

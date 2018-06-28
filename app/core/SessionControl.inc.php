@@ -1,5 +1,4 @@
 <?php
-
 class SessionControl {
 
     public static function start_session($user_id, $user_name, $token, $company_id, $company_name) {
@@ -53,4 +52,6 @@ class SessionControl {
             return false;
         }
     }
+
 }
+?>

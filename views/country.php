@@ -12,14 +12,16 @@ if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
 }
 
-// begin: variables and contants setup.
+
+# begin { variables and constants setup }
 $entity = 'Country';
 $entity_repository = $entity. 'Repository';
 $entity_validator = $entity. 'Validator';
 
 define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MANAGER);
 define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MAINTAIN);
-// end: variables and contants setup.
+# end { variables and constants setup }
+
 
 $request = get_request();
 
@@ -97,7 +99,7 @@ include_once 'templates/document-declaration.inc.php';
 include_once 'templates/navbar.inc.php';
 ?>
 
-<!-- begin: Breadcrumb -->
+<!-- begin { breadcrumb } -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="<?php echo SERVER; ?>">Inicio</a></li>
@@ -108,7 +110,7 @@ include_once 'templates/navbar.inc.php';
         <li class="breadcrumb-item active" aria-current="page"><?php echo $title; ?></li>
     </ol>
 </nav>
-<!-- end: Breadcrumb -->
+<!-- end { breadcrumb } -->
 
 <div class="container">
     <div class="row pl-5 pr-5">
@@ -119,7 +121,7 @@ include_once 'templates/navbar.inc.php';
                 <h4><b><?php echo $title; ?></b></h4>
             </div>
             <div class="card-body">
-                <!-- begin: SQL exception -->
+                <!-- begin { sql exception } -->
                 <?php
                 if (isset($_POST['request']) && isset($response)) {
                     $sql_exception = $entity_repository::get_sql_exception();
@@ -133,7 +135,7 @@ include_once 'templates/navbar.inc.php';
                     }
                 }
                 ?>
-                <!-- end: SQL exception -->
+                <!-- end { sql exception } -->
                 <form class="form" role="form" autocomplete="off" method="post" enctype="application/x-www-form-urlencoded" action="<?php echo ROUTE_MAINTAIN; ?>">
                     <input type="hidden" name="authenticity_token" value="<?php echo $_SESSION['token']; ?>">
                     <input type="hidden" name="requested_action" value="<?php echo $request; ?>">
@@ -147,7 +149,7 @@ include_once 'templates/navbar.inc.php';
                                 class="<?php echo get_submit_button_class($request); ?>"
                                 name="request"
                                 title="<?php echo get_submit_button_title($request); ?>">
-                                <?php echo get_request_button_text($request); ?>
+                                <?php echo get_submit_button_text($request); ?>
                             </button>
                             <?php
                         }

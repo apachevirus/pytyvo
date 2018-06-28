@@ -1,0 +1,12 @@
+<?php
+
+if (($request == 'new' || $request == 'edit') && isset($validator)) {    // new or edit.
+    include_once 'app/modules/brand/view/validated-brand.inc.php' ;
+} elseif ($request == 'new' && !isset($model) && !isset($validator)) {    // new.
+    include_once 'app/modules/brand/view/new-brand.inc.php' ;
+} elseif ($request == 'edit' && isset($model) && !isset($validator)) {    // edit.
+    include_once 'app/modules/brand/view/edit-brand.inc.php' ;
+} elseif (($request == 'view' || $request == 'delete') && isset($model) && !isset($validator)) {    // view or delete.
+    include_once 'app/modules/brand/view/delete-brand.inc.php' ;
+
+?>

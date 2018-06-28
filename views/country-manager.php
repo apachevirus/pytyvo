@@ -11,32 +11,96 @@ if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
 }
 
-// begin: variables and contants setup.
+
+# begin { declares or retrieves the country-search and country-page cookies }
+$country_search = '';
+$country_page = 1;
+
+if (isset($_POST['search'])) {
+    $country_search = $_POST['search'];
+} else {
+    if (isset($_COOKIE['country-search'])) {
+        $country_search = $_COOKIE['country-search'];
+    }
+}
+
+if (isset($page))  {
+    $country_page = $page;
+} else {
+    if (isset($_COOKIE['country-page'])) {
+        $country_page = $_COOKIE['country-page'];
+    }
+}
+
+setcookie('country-search', $country_search, time() + (86400 * 30), '/');    // 86400 = 1 day.
+setcookie('country-page', $country_page, time() + (86400 * 30), '/');    // 86400 = 1 day.
+
+$_COOKIE['country-search'] = $country_search;
+$_COOKIE['country-page'] = $country_page;
+
+$page = (int) $country_page;
+# end { declares or retrieves the country-search and country-page cookies }
+
+
+# begin { variables and constants setup }
 $entity_repository = 'CountryRepository';
 
 define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MANAGER);
 define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MAINTAIN);
-// end: variables and contants setup.
+# end { variables and constants setup }
+
 
 Connection::connect();
 
-if (variable_initiated($_POST['search'])) {
-    $search = $_POST['search'];
-    $any = Utils::prepare_for_search($search);
+if (!empty($country_search)) {
+    $any = Utils::prepare_for_search($country_search);
 
-    $rows = $entity_repository::get_by_any(
+    $reccount = $entity_repository::get_by_any_reccount(
         Connection::get_connection(),
         $_SESSION['company_id'],
         $any
     );
 } else {
-    $rows = $entity_repository::get_all(
+    $reccount = $entity_repository::get_reccount(
         Connection::get_connection(),
         $_SESSION['company_id']
     );
 }
 
-$reccount = count($rows);
+
+# begin { pagination variables }
+$per_page = 7;
+$start = ($page - 1) * $per_page;
+$total = ceil($reccount / $per_page);
+
+if ($page > $total) {
+    $page = (int) 1;
+    $start = 0;
+
+    setcookie('country-page', $page, time() + (86400 * 30), '/');    // 86400 = 1 day.
+    $_COOKIE['country-page'] = $page;
+}
+# end { pagination variables }
+
+
+if (!empty($country_search)) {
+    $any = Utils::prepare_for_search($country_search);
+
+    $rows = $entity_repository::get_by_any_with_limit_and_offset(
+        Connection::get_connection(),
+        $_SESSION['company_id'],
+        $any,
+        $start,
+        $per_page
+    );
+} else {
+    $rows = $entity_repository::get_all_with_limit_and_offset(
+        Connection::get_connection(),
+        $_SESSION['company_id'],
+        $start,
+        $per_page
+    );
+}
 
 Connection::disconnect();
 
@@ -46,7 +110,8 @@ include_once 'templates/document-declaration.inc.php';
 include_once 'templates/navbar.inc.php';
 ?>
 
-<!-- begin: Breadcrumb -->
+
+<!-- begin { breadcrumb } -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="<?php echo SERVER; ?>">Inicio</a></li>
@@ -56,10 +121,13 @@ include_once 'templates/navbar.inc.php';
         <li class="breadcrumb-item active" aria-current="page">Pa&#237;ses</li>
     </ol>
 </nav>
-<!-- end: Breadcrumb -->
+<!-- end { breadcrumb } -->
+
 
 <div class="container rounded pt-3" style="background: white;">
-    <!-- begin: Header -->
+
+
+    <!-- begin { header } -->
     <div class="row mb-5">
         <div class="col-md-6">
             <h1>
@@ -75,20 +143,46 @@ include_once 'templates/navbar.inc.php';
         </div>
         <div class="col-md-6">
             <form class="form-inline mt-2 mt-md-2 float-right" method="post" action="<?php echo ROUTE_MANAGER; ?>">
-                <input type="text" class="form-control mr-sm-2" id="inputSearch" name="search" maxlength="50" placeholder="Buscar..." aria-label="Buscar" value="<?php if (isset($search)) echo $search; ?>">
+                <input type="text" class="form-control mr-sm-2" id="inputSearch" name="search" maxlength="50" placeholder="Buscar..." aria-label="Buscar" value="<?php echo $country_search; ?>" autofocus>
                 <button type="submit" class="btn btn-outline-secondary my-2 my-sm-0" name="" title="Buscar">Buscar</button>
             </form>
         </div>
     </div>
-    <!-- end: Header -->
+    <!-- end { header } -->
 
-    <!-- begin: Detail -->
+
+    <!-- begin { pagination } -->
+    <?php
+    if (count($rows) > 0) {
+        ?>
+        <div class="d-flex justify-content-between">
+            <blockquote class="blockquote pt-0" style="border-left: .25rem solid #818a91; font-size: 1.0625rem; padding-left: 1rem;">
+                <p class="mb-0 mt-0">
+                    <?php echo $reccount . (($reccount > 1) ? ' Registros' : ' Registro'); ?>
+                </p>
+                <footer class="blockquote-footer mt-0">
+                    <?php echo count($rows) . ((count($rows) > 1) ? ' registros' : ' registro') . ' en p&#225;gina, ' . $total . (($total > 1) ? ' p&#225;ginas' : ' p&#225;gina'); ?>
+                </footer>
+            </blockquote>
+            <div>
+                <div>
+                    <?php echo get_pagination($page, $total, ROUTE_MANAGER . '/page/'); ?>
+                </div>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
+    <!-- end { pagination } -->
+
+
+    <!-- begin { detail } -->
     <div class="row pb-3">
         <div class="col-md-12">
             <?php
             if (count($rows) > 0) {
                 ?>
-                <table class="table table-hover">
+                <table class="table table-hover table-sm">
                     <thead>
                         <tr>
                             <th class="text-center">C&#243;digo</th>
@@ -144,7 +238,9 @@ include_once 'templates/navbar.inc.php';
             ?>
         </div>
     </div>
-    <!-- end: Detail -->
+    <!-- end { detail } -->
+
+
 </div>
 
 <?php

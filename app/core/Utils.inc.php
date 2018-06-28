@@ -1,5 +1,4 @@
 <?php
-
 class Utils {
 
     public static function alltrim($string) {
@@ -54,3 +53,4 @@ class Utils {
     }
 
 }
+?>

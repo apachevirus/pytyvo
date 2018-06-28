@@ -1,5 +1,5 @@
 <?php
-
+/* -------------------------------------------------------------------------- */
 function variable_initiated($variable) {
     if (isset($variable) && !empty($variable)) {
         return true;
@@ -8,6 +8,7 @@ function variable_initiated($variable) {
     }
 }
 
+/* -------------------------------------------------------------------------- */
 function get_request() {
     $request = '';
 
@@ -26,6 +27,7 @@ function get_request() {
     return $request;
 }
 
+/* -------------------------------------------------------------------------- */
 function get_title($request, $repository) {
     $title = '';
 
@@ -51,7 +53,8 @@ function get_title($request, $repository) {
     return $title;
 }
 
-function get_request_button_text($request) {
+/* -------------------------------------------------------------------------- */
+function get_submit_button_text($request) {
     $text = '';
 
     if (variable_initiated($request)) {
@@ -71,6 +74,7 @@ function get_request_button_text($request) {
     return $text;
 }
 
+/* -------------------------------------------------------------------------- */
 function get_cancel_button_text($request) {
     $text = '';
 
@@ -85,6 +89,7 @@ function get_cancel_button_text($request) {
     return $text;
 }
 
+/* -------------------------------------------------------------------------- */
 function get_cancel_button_title($request) {
     $text = '';
 
@@ -104,14 +109,17 @@ function get_cancel_button_title($request) {
     return $text;
 }
 
+/* -------------------------------------------------------------------------- */
 function get_submit_button_class($request) {
     $text = '';
 
      if (variable_initiated($request)) {
         switch ($request) {
             case 'new':
-            case 'edit':
                 $text = 'btn btn-primary btn-md';
+                break;
+            case 'edit':
+                $text = 'btn btn-success btn-md';
                 break;
             case 'delete':
                 $text = 'btn btn-danger btn-md';
@@ -122,6 +130,7 @@ function get_submit_button_class($request) {
     return $text;
 }
 
+/* -------------------------------------------------------------------------- */
 function get_submit_button_title($request) {
     $text = '';
 
@@ -141,3 +150,29 @@ function get_submit_button_title($request) {
 
     return $text;
 }
+
+/* -------------------------------------------------------------------------- */
+function get_pagination($page, $total, $url) {
+    $html =  '<nav aria-label="Page navigation"><ul class="pagination justify-content-end">';
+
+    if ($total > 5) {
+        $html .=  '<li class="page-item"><a class="page-link" href="#">Inicio</a></li>';
+    }
+
+    for ($i = 1; $i <= $total; $i++) {
+        if ($i !== $page) {
+            $html .=  '<li class="page-item"><a class="page-link" href="' . $url . $i . '">' . $i . '</a></li>';
+        } else {
+            $html .=  '<li class="page-item active"><a class="page-link" href="#">' . $i . '<span class="sr-only">(current)</span></a></li>';
+        }
+    }
+
+    if ($total > 5) {
+        $html .=  '<li class="page-item"><a class="page-link" href="#">Fin</a></li>';
+    }
+
+    $html .=  '</ul></nav>';
+
+    return $html;
+}
+?>

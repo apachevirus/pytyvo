@@ -5,3 +5,4 @@ include_once 'app/core/Redirection.inc.php';
 
 SessionControl::close_session();
 Redirection::redirect(SERVER);
+?>

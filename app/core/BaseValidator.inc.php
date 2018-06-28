@@ -1,5 +1,4 @@
 <?php
-
 include_once 'app/CompanyRepository.inc.php';
 include_once 'app/core/Utils.inc.php';
 
@@ -209,3 +208,4 @@ abstract class BaseValidator {
     }
 
 }
+?>

@@ -38,7 +38,7 @@ include_once 'templates/navbar.inc.php';
                 <i class="fas fa-folder" style="font-size: 1.5rem;"></i>
                 <span>Socios de negocios</span>
             </a>
-            <a class="quick-btn" href="#">
+            <a class="quick-btn" href="<?php echo ROUTE_ADMINISTRATION_SETUP_INVENTORY; ?>">
                 <i class="fas fa-folder" style="font-size: 1.5rem;"></i>
                 <span>Inventario</span>
             </a>
