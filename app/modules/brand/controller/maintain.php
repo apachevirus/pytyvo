@@ -4,18 +4,18 @@ include_once 'app/core/functions.inc.php';
 include_once 'app/core/SessionControl.inc.php';
 include_once 'app/core/Redirection.inc.php';
 include_once 'app/core/Connection.inc.php';
-include_once dirname(__DIR__) . '/model/Model.inc.php';
-include_once dirname(__DIR__) . '/model/Repository.inc.php';
-include_once dirname(__DIR__) . '/model/Validator.inc.php';
+include_once dirname(__DIR__) . '/model/Brand.inc.php';
+include_once dirname(__DIR__) . '/model/BrandRepository.inc.php';
+include_once dirname(__DIR__) . '/model/BrandValidator.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
 }
 
 # begin { variables and constants setup }
-$entity = 'Model';
-$entity_repository = 'Repository';
-$entity_validator = 'Validator';
+$entity = 'Brand';
+$entity_repository = $entity . 'Repository';
+$entity_validator = $entity . 'Validator';
 $title = 'marca';
 
 define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_BRAND_MANAGER);
@@ -92,8 +92,8 @@ Connection::disconnect();
 
 $title = str_replace('Nuevo', 'Nueva', get_title($request, $title));
 
-include_once 'template/document-declaration.inc.php';
-include_once 'template/navbar.inc.php';
-include_once dirname(__DIR__) . '/view/maintain.inc.php';
-include_once 'template/document-close.inc.php';
+include_once 'template/document-declaration.inc.phtml';
+include_once 'template/navbar.inc.phtml';
+include_once dirname(__DIR__) . '/view/maintain.inc.phtml';
+include_once 'template/document-close.inc.phtml';
 ?>

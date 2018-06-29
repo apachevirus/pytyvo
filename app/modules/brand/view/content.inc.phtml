@@ -1,0 +1,11 @@
+<?php
+if (($request == 'new' || $request == 'edit') && isset($validator)) {    // new or edit.
+    include_once dirname(__DIR__) . '/view/validated.inc.phtml';
+} elseif ($request == 'new' && !isset($model) && !isset($validator)) {    // new.
+    include_once dirname(__DIR__) . '/view/new.inc.phtml';
+} elseif ($request == 'edit' && isset($model) && !isset($validator)) {    // edit.
+    include_once dirname(__DIR__) . '/view/edit.inc.phtml';
+} elseif (($request == 'view' || $request == 'delete') && isset($model) && !isset($validator)) {    // view or delete.
+    include_once dirname(__DIR__) . '/view/delete.inc.phtml';
+}
+?>

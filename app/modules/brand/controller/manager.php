@@ -5,7 +5,7 @@ include_once 'app/core/SessionControl.inc.php';
 include_once 'app/core/Redirection.inc.php';
 include_once 'app/core/Connection.inc.php';
 include_once 'app/core/Utils.inc.php';
-include_once dirname(__DIR__) . '/model/Repository.inc.php';
+include_once dirname(__DIR__) . '/model/BrandRepository.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
@@ -13,7 +13,7 @@ if (!SessionControl::session_started()) {
 
 # begin { variables and constants setup }
 $entity = 'brand';
-$entity_repository = 'Repository';
+$entity_repository = $entity . 'Repository';
 $entity_search = $entity . '_search';
 $entity_page = $entity . '_page';
 
@@ -106,8 +106,8 @@ if (!empty(${$entity_search})) {
 
 Connection::disconnect();
 
-include_once 'template/document-declaration.inc.php';
-include_once 'template/navbar.inc.php';
-include_once dirname(__DIR__) . '/view/manager.inc.php';
-include_once 'template/document-close.inc.php';
+include_once 'template/document-declaration.inc.phtml';
+include_once 'template/navbar.inc.phtml';
+include_once dirname(__DIR__) . '/view/manager.inc.phtml';
+include_once 'template/document-close.inc.phtml';
 ?>

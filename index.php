@@ -13,32 +13,32 @@ $chosen_route = 'app/modules/system/view/404.php';
 
 if ($route_parts[0] == 'pytyvo') {
     if (count($route_parts) == 1) {
-        $chosen_route = 'views/home.php';
+        $chosen_route = 'app/modules/system/controller/home.php';
     } else if (count($route_parts) == 2) {
         switch ($route_parts[1]) {
             case 'signin':
-                $chosen_route = 'views/signin.php';
+                $chosen_route = 'app/modules/signin/controller/signin.php';
                 break;
             case 'signout':
                 $chosen_route = 'app/core/signout.php';
                 break;
             case 'signup':
-                $chosen_route = 'views/signup.php';
+                $chosen_route = 'app/modules/signup/controller/signup.php';
                 break;
             case 'administration':
-                $chosen_route = 'views/administration.php';
+                $chosen_route = 'app/modules/system/controller/administration.php';
                 break;
         }
     } else if (count($route_parts) == 3) {
         switch ($route_parts[1]) {
             case 'successful-signup':
                 $name = $route_parts[2];
-                $chosen_route = 'views/successful-signup.php';
+                $chosen_route = 'app/modules/signup/controller/successful-signup.php';
                 break;
             case 'administration':
                 switch ($route_parts[2]) {
                     case 'setup':
-                        $chosen_route = 'views/setup.php';
+                        $chosen_route = 'app/modules/system/controller/setup.php';
                         break;
                 }
                 break;
@@ -50,10 +50,10 @@ if ($route_parts[0] == 'pytyvo') {
                     case 'setup':
                         switch ($route_parts[3]) {
                             case 'general':
-                                $chosen_route = 'views/general.php';
+                                $chosen_route = 'app/modules/system/controller/general.php';
                                 break;
                             case 'inventory':
-                                $chosen_route = 'app/modules/system/view/inventory.php';
+                                $chosen_route = 'app/modules/system/controller/inventory.php';
                                 break;
                         }
                         break;
