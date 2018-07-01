@@ -1,0 +1,16 @@
+<input type="hidden" name="id" value="<?php echo $model->get_id(); ?>">
+
+<div class="form-group">
+    <label for="inputName">Nombre<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
+    <input type="text" class="form-control" id="inputName" name="name" maxlength="50" style="text-transform: uppercase;" placeholder="" value="<?php echo $model->get_name(); ?>" required autofocus>
+</div>
+
+<div class="form-group">
+    <label for="inputAreaCode">Prefijo telef&#243;nico<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
+    <input type="number" class="form-control" id="inputAreaCode" name="area_code" min="1" max="999" placeholder="" value="<?php echo $model->get_area_code(); ?>" required>
+</div>
+
+<div class="form-check mb-3">
+    <input type="checkbox" class="form-check-input" id="checkActive" name="active" <?php if ($model->is_active()) echo 'checked'; ?>>
+    <label class="form-check-label" for="checkActive">Vigente</label>
+</div>

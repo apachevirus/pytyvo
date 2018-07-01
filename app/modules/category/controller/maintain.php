@@ -4,22 +4,22 @@ include_once 'app/core/functions.inc.php';
 include_once 'app/core/SessionControl.inc.php';
 include_once 'app/core/Redirection.inc.php';
 include_once 'app/core/Connection.inc.php';
-include_once dirname(__DIR__) . '/model/Brand.inc.php';
-include_once dirname(__DIR__) . '/model/BrandRepository.inc.php';
-include_once dirname(__DIR__) . '/model/BrandValidator.inc.php';
+include_once dirname(__DIR__) . '/model/Category.inc.php';
+include_once dirname(__DIR__) . '/model/CategoryRepository.inc.php';
+include_once dirname(__DIR__) . '/model/CategoryValidator.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
 }
 
 # begin { variables and constants setup }
-$entity = 'brand';
+$entity = 'category';
 $entity_repository = ucfirst($entity) . 'Repository';
 $entity_validator = ucfirst($entity) . 'Validator';
-$title = 'marca';
+$title = 'rubro';
 
-define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_BRAND_MANAGER);
-define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_INVENTORY_BRAND_MAINTAIN);
+define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_CATEGORY_MANAGER);
+define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_INVENTORY_CATEGORY_MAINTAIN);
 # end { variables and constants setup }
 
 $request = get_request();
@@ -90,7 +90,7 @@ if (isset($_POST['request'])) {
 
 Connection::disconnect();
 
-$title = str_replace('Nuevo', 'Nueva', get_title($request, $title));
+$title = get_title($request, $title);
 
 include_once 'template/document-declaration.inc.phtml';
 include_once 'template/navbar.inc.phtml';

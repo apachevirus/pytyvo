@@ -1,7 +1,6 @@
 <?php
-
 include_once 'app/core/BaseRepository.inc.php';
-include_once 'app/Country.inc.php';
+include_once 'Country.inc.php';
 
 class CountryRepository extends BaseRepository {
 
@@ -182,34 +181,19 @@ class CountryRepository extends BaseRepository {
     public static function get_by_any($connection, $company_id, $any) {
         $countries = array();
 
-        if (isset($connection)) {
-            try {
-                $sql = 'CALL sp_' . static::$table . '_get_by_any(:company_id, :any)';
+        $results = parent::get_by_any($connection, $company_id, $any);
 
-                $stmt = $connection->prepare($sql);
-
-                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
-                $stmt->bindParam(':any', $any, PDO::PARAM_STR);
-
-                $stmt->execute();
-
-                $results = $stmt->fetchAll();
-
-                if (count($results)) {
-                    foreach ($results as $row) {
-                        $countries[] = new Country(
-                            $row['company_id'],
-                            $row['id'],
-                            $row['name'],
-                            $row['area_code'],
-                            $row['active'],
-                            $row['created_at'],
-                            $row['updated_at']
-                        );
-                    }
-                }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
+        if (count($results)) {
+            foreach ($results as $row) {
+                $countries[] = new Country(
+                    $row['company_id'],
+                    $row['id'],
+                    $row['name'],
+                    $row['area_code'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
             }
         }
 
@@ -219,65 +203,23 @@ class CountryRepository extends BaseRepository {
     public static function get_by_any_with_limit_and_offset($connection, $company_id, $any, $limit, $offset) {
         $countries = array();
 
-        if (isset($connection)) {
-            try {
-                $sql = 'CALL sp_' . static::$table . '_get_by_any_with_limit_and_offset(:company_id, :any, :limit, :offset)';
+        $results = parent::get_by_any_with_limit_and_offset($connection, $company_id, $any, $limit, $offset);
 
-                $stmt = $connection->prepare($sql);
-
-                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
-                $stmt->bindParam(':any', $any, PDO::PARAM_STR);
-                $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-                $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-
-                $stmt->execute();
-
-                $results = $stmt->fetchAll();
-
-                if (count($results)) {
-                    foreach ($results as $row) {
-                        $countries[] = new Country(
-                            $row['company_id'],
-                            $row['id'],
-                            $row['name'],
-                            $row['area_code'],
-                            $row['active'],
-                            $row['created_at'],
-                            $row['updated_at']
-                        );
-                    }
-                }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
+        if (count($results)) {
+            foreach ($results as $row) {
+                $countries[] = new Country(
+                    $row['company_id'],
+                    $row['id'],
+                    $row['name'],
+                    $row['area_code'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
             }
         }
 
         return $countries;
-    }
-
-    public static function get_by_any_reccount($connection, $company_id, $any) {
-        $reccount = null;
-
-        if (isset($connection)) {
-            try {
-                $sql = 'SELECT fn_' . static::$table . '_get_by_any_reccount(:company_id, :any) reccount';
-
-                $stmt = $connection->prepare($sql);
-
-                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
-                $stmt->bindParam(':any', $any, PDO::PARAM_STR);
-
-                $stmt->execute();
-
-                $result = $stmt->fetch();
-
-                $reccount = $result['reccount'];
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
-        }
-
-        return $reccount;
     }
 
     public static function insert($connection, $user_id, $country) {
@@ -353,3 +295,4 @@ class CountryRepository extends BaseRepository {
     }
 
 }
+?>

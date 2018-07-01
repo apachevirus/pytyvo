@@ -31,7 +31,7 @@ include_once 'template/navbar.inc.phtml';
                 <i class="far fa-window-maximize" style="font-size: 1.5rem;"></i>
                 <span>Familias</span>
             </a>
-            <a class="quick-btn" href="#">
+            <a class="quick-btn" href="<?php echo ROUTE_ADMINISTRATION_SETUP_INVENTORY_CATEGORY_MANAGER; ?>">
                 <i class="far fa-window-maximize" style="font-size: 1.5rem;"></i>
                 <span>Rubros</span>
             </a>

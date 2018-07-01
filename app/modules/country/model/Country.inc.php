@@ -1,5 +1,4 @@
 <?php
-
 include_once 'app/core/BaseModel.inc.php';
 
 class Country extends BaseModel {
@@ -20,3 +19,4 @@ class Country extends BaseModel {
     }
 
 }
+?>

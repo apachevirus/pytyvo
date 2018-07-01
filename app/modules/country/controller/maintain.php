@@ -4,22 +4,22 @@ include_once 'app/core/functions.inc.php';
 include_once 'app/core/SessionControl.inc.php';
 include_once 'app/core/Redirection.inc.php';
 include_once 'app/core/Connection.inc.php';
-include_once dirname(__DIR__) . '/model/Brand.inc.php';
-include_once dirname(__DIR__) . '/model/BrandRepository.inc.php';
-include_once dirname(__DIR__) . '/model/BrandValidator.inc.php';
+include_once dirname(__DIR__) . '/model/Country.inc.php';
+include_once dirname(__DIR__) . '/model/CountryRepository.inc.php';
+include_once dirname(__DIR__) . '/model/CountryValidator.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
 }
 
 # begin { variables and constants setup }
-$entity = 'brand';
+$entity = 'country';
 $entity_repository = ucfirst($entity) . 'Repository';
 $entity_validator = ucfirst($entity) . 'Validator';
-$title = 'marca';
+$title = 'pa&#237;s';
 
-define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_BRAND_MANAGER);
-define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_INVENTORY_BRAND_MAINTAIN);
+define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MANAGER);
+define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MAINTAIN);
 # end { variables and constants setup }
 
 $request = get_request();
@@ -47,6 +47,7 @@ if (isset($_POST['request'])) {
             $_SESSION['company_id'],
             (int) $_POST['id'],
             $_POST['name'],
+            $_POST['area_code'],
             (bool) ((isset($_POST['active']) && $_POST['active'] == "on") ? 1 : 0)
         );
 
@@ -55,6 +56,7 @@ if (isset($_POST['request'])) {
                 $validator->get_company_id(),
                 $validator->get_id(),
                 $validator->get_name(),
+                $validator->get_area_code(),
                 $validator->is_active(),
                 '',   // created_at
                 ''    // updated_at
@@ -90,7 +92,7 @@ if (isset($_POST['request'])) {
 
 Connection::disconnect();
 
-$title = str_replace('Nuevo', 'Nueva', get_title($request, $title));
+$title = get_title($request, $title);
 
 include_once 'template/document-declaration.inc.phtml';
 include_once 'template/navbar.inc.phtml';

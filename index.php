@@ -9,7 +9,7 @@ $route_parts = explode('/', $route);
 $route_parts = array_filter($route_parts);
 $route_parts = array_slice($route_parts, 0);
 
-$chosen_route = 'app/modules/system/view/404.php';
+$chosen_route = 'app/modules/system/controller/404.php';
 
 if ($route_parts[0] == 'pytyvo') {
     if (count($route_parts) == 1) {
@@ -69,7 +69,7 @@ if ($route_parts[0] == 'pytyvo') {
                             case 'general':
                                 switch ($route_parts[4]) {
                                     case 'country-manager':
-                                        $chosen_route = 'views/country-manager.php';
+                                        $chosen_route = 'app/modules/country/controller/manager.php';
                                         break;
                                 }
                                 break;
@@ -77,6 +77,9 @@ if ($route_parts[0] == 'pytyvo') {
                                 switch ($route_parts[4]) {
                                     case 'brand-manager':
                                         $chosen_route = 'app/modules/brand/controller/manager.php';
+                                        break;
+                                    case 'category-manager':
+                                        $chosen_route = 'app/modules/category/controller/manager.php';
                                         break;
                                 }
                                 break;
@@ -96,7 +99,7 @@ if ($route_parts[0] == 'pytyvo') {
                                     case 'country-manager':
                                         switch ($route_parts[5]) {
                                             case 'maintain':
-                                                $chosen_route = 'views/country.php';
+                                                $chosen_route = 'app/modules/country/controller/maintain.php';
                                                 break;
                                         }
                                         break;
@@ -108,6 +111,13 @@ if ($route_parts[0] == 'pytyvo') {
                                         switch ($route_parts[5]) {
                                             case 'maintain':
                                                 $chosen_route = 'app/modules/brand/controller/maintain.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'category-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'maintain':
+                                                $chosen_route = 'app/modules/category/controller/maintain.php';
                                                 break;
                                         }
                                         break;
@@ -130,7 +140,7 @@ if ($route_parts[0] == 'pytyvo') {
                                         switch ($route_parts[5]) {
                                             case 'page':
                                                 $page = (int) $route_parts[6];
-                                                $chosen_route = 'views/country-manager.php';
+                                                $chosen_route = 'app/modules/country/controller/manager.php';
                                                 break;
                                         }
                                         break;
@@ -146,6 +156,15 @@ if ($route_parts[0] == 'pytyvo') {
                                                 break;
                                         }
                                         break;
+                                    case 'category-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'page':
+                                                $page = (int) $route_parts[6];
+                                                $chosen_route = 'app/modules/category/controller/manager.php';
+                                                break;
+                                        }
+                                        break;
+
                                 }
                                 break;
                         }

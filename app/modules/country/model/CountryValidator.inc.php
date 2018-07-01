@@ -1,8 +1,7 @@
 <?php
-
 include_once 'app/core/BaseValidator.inc.php';
 include_once 'app/core/Utils.inc.php';
-include_once 'app/CountryRepository.inc.php';
+include_once 'CountryRepository.inc.php';
 
 class CountryValidator extends BaseValidator {
 
@@ -82,3 +81,4 @@ class CountryValidator extends BaseValidator {
     }
 
 }
+?>

@@ -5,21 +5,21 @@ include_once 'app/core/SessionControl.inc.php';
 include_once 'app/core/Redirection.inc.php';
 include_once 'app/core/Connection.inc.php';
 include_once 'app/core/Utils.inc.php';
-include_once dirname(__DIR__) . '/model/BrandRepository.inc.php';
+include_once dirname(__DIR__) . '/model/CountryRepository.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
 }
 
 # begin { variables and constants setup }
-$entity = 'brand';
+$entity = 'country';
 $entity_repository = ucfirst($entity) . 'Repository';
 $entity_search = strtolower($entity) . '_search';
 $entity_page = strtolower($entity) . '_page';
-$title = 'Gesti&#243;n de marcas';
+$title = 'Gesti&#243;n de pa&#237;ses';
 
-define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_BRAND_MANAGER);
-define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_INVENTORY_BRAND_MAINTAIN);
+define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MANAGER);
+define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_GENERAL_COUNTRY_MAINTAIN);
 # end { variables and constants setup }
 
 # begin { declares or retrieves the entity_search and entity_page cookies }
