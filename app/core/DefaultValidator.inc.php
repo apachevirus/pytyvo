@@ -1,19 +1,16 @@
 <?php
-include_once 'app/modules/company/model/CompanyRepository.inc.php';
 include_once 'Utils.inc.php';
 
-abstract class BaseValidator {
+abstract class DefaultValidator {
 
     protected $notice_begin = '<div class="alert alert-danger" role="alert" style="border-radius: 5px; font-size: 0.8rem; margin-top: 0.5rem; padding: 0.2rem;">';
     protected $notice_end = '</div>';
     protected $repository = '';
 
-    protected $company_id = 0;
     protected $id = 0;
     protected $name = '';
     protected $active = 0;
 
-    protected $error_company_id = '';
     protected $error_id = '';
     protected $error_name = '';
     protected $error_active = '';
@@ -24,32 +21,6 @@ abstract class BaseValidator {
         } else {
             return false;
         }
-    }
-
-    protected function validate_company_id($connection, $company_id) {
-        if (!$this->variable_initiated($company_id)) {
-            return 'Por favor, escribe un c&#243;digo de empresa.';
-        } else {
-            $this->company_id = $company_id;
-        }
-
-        if ($company_id < 0) {
-            return 'El c&#243;digo de empresa debe ser mayor que cero.';
-        }
-
-        if ($company_id > 16777215) {
-            return 'El c&#243;digo de empresa debe ser menor a 16777215.';
-        }
-
-        if (!CompanyRepository::id_exists($connection, $company_id)) {
-            return 'El c&#243;digo de empresa no existe.';
-        }
-
-        if (!CompanyRepository::is_active($connection, $company_id)) {
-            return 'El c&#243;digo de empresa no est&#225; vigente.';
-        }
-
-        return '';
     }
 
     protected function validate_id($id) {
@@ -70,7 +41,7 @@ abstract class BaseValidator {
         return '';
     }
 
-    protected function validate_name($connection, $company_id, $name) {
+    protected function validate_name($connection, $name) {
         if (!$this->variable_initiated($name)) {
             return 'Por favor, escribe un nombre.';
         } else {
@@ -86,11 +57,11 @@ abstract class BaseValidator {
         }
 
         if (is_int($this->id) && empty($this->id)) {
-            if ($this->repository::name_exists($connection, $company_id, $this->name)) {
+            if ($this->repository::name_exists($connection, $this->name)) {
                 return 'Este nombre ya est&#225; en uso. Elige otro.';
             }
         } elseif (is_int($this->id) && !empty($this->id)) {
-            $results = $this->repository::get_by_name($connection, $company_id, $this->name);
+            $results = $this->repository::get_by_name($connection, $this->name);
 
             if (count($results)) {
                 foreach ($results as $row) {
@@ -118,10 +89,6 @@ abstract class BaseValidator {
         return '';
     }
 
-    public function get_company_id() {
-        return $this->company_id;
-    }
-
     public function get_id() {
         return $this->id;
     }
@@ -132,12 +99,6 @@ abstract class BaseValidator {
 
     public function is_active() {
         return $this->active;
-    }
-
-    public function show_company_id() {
-        if ($this->company_id > 0) {
-            echo 'value="' . $this->company_id . '"';
-        }
     }
 
     public function show_id() {
@@ -156,10 +117,6 @@ abstract class BaseValidator {
         }
     }
 
-    public function get_error_company_id() {
-        return $this->error_company_id;
-    }
-
     public function get_error_id() {
         return $this->error_id;
     }
@@ -170,12 +127,6 @@ abstract class BaseValidator {
 
     public function get_error_active() {
         return $this->error_active;
-    }
-
-    public function show_error_company_id() {
-        if ($this->error_company_id !== '') {
-            echo $this->notice_begin . $this->error_company_id . $this->notice_end;
-        }
     }
 
     public function show_error_id() {
@@ -197,8 +148,7 @@ abstract class BaseValidator {
     }
 
     public function is_valid() {
-        if ($this->error_company_id === '' &&
-                $this->error_id === '' &&
+        if ($this->error_id === '' &&
                 $this->error_name === '' &&
                 $this->error_active === '') {
             return true;
