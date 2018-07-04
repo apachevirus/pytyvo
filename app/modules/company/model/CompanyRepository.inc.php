@@ -1,79 +1,10 @@
 <?php
-
+include_once 'app/core/DefaultRepository.inc.php';
 include_once 'Company.inc.php';
 
-class CompanyRepository {
+class CompanyRepository extends DefaultRepository {
 
     protected static $table = 'company';
-
-    public static function get_reccount($connection) {
-        $reccount = null;
-
-        if (isset($connection)) {
-            try {
-                $sql = 'SELECT fn_' . static::$table . '_reccount() reccount';
-
-                $stmt = $connection->prepare($sql);
-                $stmt->execute();
-
-                $result = $stmt->fetch();
-
-                $reccount = $result['reccount'];
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
-        }
-
-        return $reccount;
-    }
-
-    public static function id_exists($connection, $id) {
-        $id_exists = true;
-
-        if (isset($connection)) {
-            try {
-                $sql = 'SELECT fn_' . static::$table . '_id_exists(:id) id_exists';
-
-                $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->execute();
-
-                $result = $stmt->fetch();
-
-                if (!$result['id_exists']) {
-                    $id_exists = false;
-                }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
-        }
-
-        return $id_exists;
-    }
-
-    public static function name_exists($connection, $name) {
-        $name_exists = true;
-
-        if (isset($connection)) {
-            try {
-                $sql = 'SELECT fn_' . static::$table . '_name_exists(:name) name_exists';
-
-                $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':name', $name, PDO::PARAM_STR);
-                $stmt->execute();
-
-                $result = $stmt->fetch();
-
-                if (!$result['name_exists']) {
-                    $name_exists = false;
-                }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
-        }
-
-        return $name_exists;
-    }
 
     public static function tin_exists($connection, $tin) {
         $tin_exists = true;
@@ -99,77 +30,42 @@ class CompanyRepository {
         return $tin_exists;
     }
 
-    public static function is_active($connection, $id) {
-        $is_active = false;
-
-        if (isset($connection)) {
-            try {
-                $sql = 'SELECT fn_' . static::$table . '_is_active(:id) is_active';
-
-                $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->execute();
-
-                $result = $stmt->fetch();
-
-                if ($result['is_active']) {
-                    $is_active = true;
-                }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
-        }
-
-        return $is_active;
-    }
-
-    public static function new_id($connection) {
-        $new_id = null;
-
-        if (isset($connection)) {
-            try {
-                $sql = 'SELECT fn_' . static::$table . '_new_id() new_id';
-
-                $stmt = $connection->prepare($sql);
-                $stmt->execute();
-
-                $result = $stmt->fetch();
-
-                $new_id = $result['new_id'];
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
-        }
-
-        return $new_id;
-    }
-
     public static function get_all($connection) {
         $companies = array();
 
-        if (isset($connection)) {
-            try {
-                $sql = 'CALL sp_' . static::$table . '_get_all()';
+        $results = parent::get_all($connection);
 
-                $stmt = $connection->prepare($sql);
-                $stmt->execute();
+        if (count($results)) {
+            foreach ($results as $row) {
+                $companies[] = new Company(
+                    $row['id'],
+                    $row['name'],
+                    $row['tin'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
+            }
+        }
 
-                $results = $stmt->fetchAll();
+        return $companies;
+    }
 
-                if (count($results)) {
-                    foreach ($results as $row) {
-                        $companies[] = new Company(
-                            $row['id'],
-                            $row['name'],
-                            $row['tin'],
-                            $row['active'],
-                            $row['created_at'],
-                            $row['updated_at']
-                        );
-                    }
-                }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
+    public static function get_all_with_limit_and_offset($connection, $limit, $offset) {
+        $companies = array();
+
+        $results = parent::get_all_with_limit_and_offset($connection, $limit, $offset);
+
+        if (count($results)) {
+            foreach ($results as $row) {
+                $companies[] = new Company(
+                    $row['id'],
+                    $row['name'],
+                    $row['tin'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
             }
         }
 
@@ -179,29 +75,18 @@ class CompanyRepository {
     public static function get_all_active($connection) {
         $companies = array();
 
-        if (isset($connection)) {
-            try {
-                $sql = 'CALL sp_' . static::$table . '_get_all_active()';
+        $results = parent::get_all_active($connection);
 
-                $stmt = $connection->prepare($sql);
-                $stmt->execute();
-
-                $results = $stmt->fetchAll();
-
-                if (count($results)) {
-                    foreach ($results as $row) {
-                        $companies[] = new Company(
-                            $row['id'],
-                            $row['name'],
-                            $row['tin'],
-                            $row['active'],
-                            $row['created_at'],
-                            $row['updated_at']
-                        );
-                    }
-                }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
+        if (count($results)) {
+            foreach ($results as $row) {
+                $companies[] = new Company(
+                    $row['id'],
+                    $row['name'],
+                    $row['tin'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
             }
         }
 
@@ -211,29 +96,17 @@ class CompanyRepository {
     public static function get_by_id($connection, $id) {
         $company = null;
 
-        if (isset($connection)) {
-            try {
-                $sql = 'CALL sp_' . static::$table . '_get_by_id(:id)';
+        $result = parent::get_by_id($connection, $id);
 
-                $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->execute();
-
-                $result = $stmt->fetch();
-
-                if (!empty($result)) {
-                    $company = new Company(
-                        $result['id'],
-                        $result['name'],
-                        $result['tin'],
-                        $result['active'],
-                        $result['created_at'],
-                        $result['updated_at']
-                    );
-                }
-             } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
+        if (!empty($result)) {
+            $company = new Company(
+                $result['id'],
+                $result['name'],
+                $result['tin'],
+                $result['active'],
+                $result['created_at'],
+                $result['updated_at']
+            );
         }
 
         return $company;
@@ -242,30 +115,18 @@ class CompanyRepository {
     public static function get_by_name($connection, $name) {
         $companies = array();
 
-        if (isset($connection)) {
-            try {
-                $sql = 'CALL sp_' . static::$table . '_by_name(:name)';
+        $results = parent::get_by_name($connection, $name);
 
-                $stmt = $connection->prepare($sql);
-                $stmt->bindParam(':name', $name, PDO::PARAM_STR);
-                $stmt->execute();
-
-                $results = $stmt->fetchAll();
-
-                if (count($results)) {
-                    foreach ($results as $row) {
-                        $companies[] = new Company(
-                            $row['id'],
-                            $row['name'],
-                            $row['tin'],
-                            $row['active'],
-                            $row['created_at'],
-                            $row['updated_at']
-                        );
-                    }
-                }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
+        if (count($results)) {
+            foreach ($results as $row) {
+                $companies[] = new Company(
+                    $row['id'],
+                    $row['name'],
+                    $row['tin'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
             }
         }
 
@@ -277,7 +138,7 @@ class CompanyRepository {
 
         if (isset($connection)) {
             try {
-                $sql = 'CALL sp_' . static::$table . '_by_tin(:tin)';
+                $sql = 'CALL sp_' . static::$table . '_get_by_tin(:tin)';
 
                 $stmt = $connection->prepare($sql);
                 $stmt->bindParam(':tin', $tin, PDO::PARAM_STR);
@@ -305,4 +166,113 @@ class CompanyRepository {
         return $companies;
     }
 
+    public static function get_by_any($connection, $any) {
+        $companies = array();
+
+        $results = parent::get_by_any($connection, $any);
+
+        if (count($results)) {
+            foreach ($results as $row) {
+                $companies[] = new Company(
+                    $row['id'],
+                    $row['name'],
+                    $row['tin'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
+            }
+        }
+
+        return $companies;
+    }
+
+    public static function get_by_any_with_limit_and_offset($connection, $any, $limit, $offset) {
+        $companies = array();
+
+        $results = parent::get_by_any_with_limit_and_offset($connection, $any, $limit, $offset);
+
+        if (count($results)) {
+            foreach ($results as $row) {
+                $companies[] = new Company(
+                    $row['id'],
+                    $row['name'],
+                    $row['tin'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
+            }
+        }
+
+        return $companies;
+    }
+
+    public static function insert($connection, $company) {
+        $company_inserted = false;
+
+        if (isset($connection)) {
+            try {
+                $sql = 'CALL sp_' . static::$table . '_insert(0, :name, :tin, :active)';
+
+                $name = $company->get_name();
+                $tin = $company->get_tin();
+                $active = $company->is_active();
+
+                $stmt = $connection->prepare($sql);
+
+                $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+                $stmt->bindParam(':tin', $tin, PDO::PARAM_STR);
+                $stmt->bindParam(':active', $active, PDO::PARAM_BOOL);
+
+                $company_inserted = $stmt->execute();
+            } catch (PDOException $ex) {
+                if ($ex->getCode() == '45000') {
+                    $pdo_exception = explode('│', $ex->getMessage());
+                    static::$sql_exception = $pdo_exception[1];
+                } else {
+                    print 'ERROR: ' . $ex->getMessage() . '<br>';
+                    print 'ERROR: ' . $ex->getCode() . gettype($ex->getCode()). '<br>';
+                }
+            }
+        }
+
+        return $company_inserted;
+    }
+
+    public static function update($connection, $company) {
+        $company_updated = false;
+
+        if (isset($connection)) {
+            try {
+                $sql = 'CALL sp_' . static::$table . '_update(:id, :name, :tin, :active)';
+
+                $id = $company->get_id();
+                $name = $company->get_name();
+                $tin = $company->get_tin();
+                $active = $company->is_active();
+
+                $stmt = $connection->prepare($sql);
+
+                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+                $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+                $stmt->bindParam(':tin', $tin, PDO::PARAM_STR);
+                $stmt->bindParam(':active', $active, PDO::PARAM_BOOL);
+
+                $company_updated = $stmt->execute();
+            } catch (PDOException $ex) {
+                if ($ex->getCode() == '45000') {
+                    $pdo_exception = explode('│', $ex->getMessage());
+                    static::$sql_exception = $pdo_exception[1];
+                } else {
+                    print 'ERROR: ' . $ex->getMessage() . '<br>';
+                    print 'ERROR: ' . $ex->getCode() . gettype($ex->getCode()). '<br>';
+                }
+            }
+        }
+
+        return $company_updated;
+    }
+
 }
+?>
