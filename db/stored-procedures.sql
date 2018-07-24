@@ -1976,6 +1976,31 @@ DELIMITER ;
 -- BEGIN: SUBCATEGORIES
 --
 
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'subcategories' table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_subcategory_reccount $$
+
+CREATE FUNCTION fn_subcategory_reccount(p_company_id MEDIUMINT UNSIGNED)
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        subcategories
+    WHERE
+        company_id = p_company_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
 /* -------------------------------------------------------------------------- *
  * FN to find out if an ID exists in the 'subcategories' table.               *
  * -------------------------------------------------------------------------- */
@@ -2101,6 +2126,22 @@ END $$
 DELIMITER ;
 
 /* -------------------------------------------------------------------------- *
+ * SP to get all rows from the 'subcategories' table.                         *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_subcategory_get_all_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_subcategory_get_all_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                              IN p_limit MEDIUMINT UNSIGNED,
+                                                              IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT * FROM subcategories WHERE company_id = p_company_id ORDER BY name LIMIT p_limit, p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
  * SP to get all active rows from the 'subcategories' table.                  *
  * -------------------------------------------------------------------------- */
 DELIMITER $$
@@ -2143,6 +2184,85 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'subcategories' table.                *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_subcategory_get_by_any $$
+
+CREATE PROCEDURE sp_subcategory_get_by_any(IN p_company_id MEDIUMINT UNSIGNED,
+                                           IN p_any VARCHAR(50))
+BEGIN
+    SELECT
+        *
+    FROM
+        subcategories
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    ORDER BY
+        name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'subcategories' table.                *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_subcategory_get_by_any_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_subcategory_get_by_any_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                                 IN p_any VARCHAR(50),
+                                                                 IN p_limit MEDIUMINT UNSIGNED,
+                                                                 IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        *
+    FROM
+        subcategories
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    ORDER BY
+        name
+    LIMIT
+        p_limit, p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'subcategories' table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_subcategory_get_by_any_reccount $$
+
+CREATE FUNCTION fn_subcategory_get_by_any_reccount(p_company_id MEDIUMINT UNSIGNED,
+                                                   p_any VARCHAR(50))
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        subcategories
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
 
 /* -------------------------------------------------------------------------- *
  * SP to insert rows into the 'subcategories' table.                          *
@@ -2304,6 +2424,42 @@ BEGIN
             company_id = p_company_id AND
             id = p_id;
     END IF;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to delete rows into the 'subcategories' table.                          *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_subcategory_delete $$
+
+CREATE PROCEDURE sp_subcategory_delete(IN p_user_id MEDIUMINT UNSIGNED,
+                                       IN p_company_id MEDIUMINT UNSIGNED,
+                                       IN p_id MEDIUMINT UNSIGNED)
+BEGIN
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'subcategory', 'delete');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_subcategory_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No existe.│';
+    END IF;
+    -- end { validate: id }
+
+    DELETE FROM subcategories WHERE company_id = p_company_id AND id = p_id;
 END $$
 
 DELIMITER ;

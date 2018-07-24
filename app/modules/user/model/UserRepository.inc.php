@@ -11,7 +11,7 @@ class UserRepository extends DefaultRepository {
 
         if (isset($connection)) {
             try {
-                $sql = 'SELECT fn' . static::$table . 'username_exists(:username) username_exists';
+                $sql = 'SELECT fn_' . static::$table . '_username_exists(:username) username_exists';
 
                 $stmt = $connection->prepare($sql);
                 $stmt->bindParam(':username', $username, PDO::PARAM_STR);
