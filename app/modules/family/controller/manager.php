@@ -5,21 +5,21 @@ include_once 'app/core/SessionControl.inc.php';
 include_once 'app/core/Redirection.inc.php';
 include_once 'app/core/Connection.inc.php';
 include_once 'app/core/Utils.inc.php';
-include_once dirname(__DIR__) . '/model/SubcategoryRepository.inc.php';
+include_once dirname(__DIR__) . '/model/FamilyRepository.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
 }
 
 # begin { variables and constants setup }
-$entity = 'subcategory';
+$entity = 'family';
 $entity_repository = ucfirst($entity) . 'Repository';
 $entity_search = strtolower($entity) . '_search';
 $entity_page = strtolower($entity) . '_page';
-$title = 'Gesti&#243;n de subrubros';
+$title = 'Gesti&#243;n de familias';
 
-define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_SUBCATEGORY_MANAGER);
-define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_INVENTORY_SUBCATEGORY_MAINTAIN);
+define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_FAMILY_MANAGER);
+define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_INVENTORY_FAMILY_MAINTAIN);
 # end { variables and constants setup }
 
 # begin { declares or retrieves the entity_search and entity_page cookies }

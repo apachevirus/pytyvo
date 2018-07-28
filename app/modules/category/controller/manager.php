@@ -89,15 +89,15 @@ if (!empty(${$entity_search})) {
         Connection::get_connection(),
         $_SESSION['company_id'],
         $any,
-        $start,
-        $per_page
+        $per_page,
+        $start
     );
 } else {
     $rows = $entity_repository::get_all_with_limit_and_offset(
         Connection::get_connection(),
         $_SESSION['company_id'],
-        $start,
-        $per_page
+        $per_page,
+        $start
     );
 }
 

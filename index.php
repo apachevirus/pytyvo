@@ -75,14 +75,17 @@ if ($route_parts[0] == 'pytyvo') {
                                 break;
                             case 'inventory':
                                 switch ($route_parts[4]) {
-                                    case 'brand-manager':
-                                        $chosen_route = 'app/modules/brand/controller/manager.php';
+                                    case 'family-manager':
+                                        $chosen_route = 'app/modules/family/controller/manager.php';
                                         break;
                                     case 'category-manager':
                                         $chosen_route = 'app/modules/category/controller/manager.php';
                                         break;
                                     case 'subcategory-manager':
                                         $chosen_route = 'app/modules/subcategory/controller/manager.php';
+                                        break;
+                                    case 'brand-manager':
+                                        $chosen_route = 'app/modules/brand/controller/manager.php';
                                         break;
                                 }
                                 break;
@@ -110,10 +113,10 @@ if ($route_parts[0] == 'pytyvo') {
                                 break;
                             case 'inventory':
                                 switch ($route_parts[4]) {
-                                    case 'brand-manager':
+                                    case 'family-manager':
                                         switch ($route_parts[5]) {
                                             case 'maintain':
-                                                $chosen_route = 'app/modules/brand/controller/maintain.php';
+                                                $chosen_route = 'app/modules/family/controller/maintain.php';
                                                 break;
                                         }
                                         break;
@@ -128,6 +131,13 @@ if ($route_parts[0] == 'pytyvo') {
                                         switch ($route_parts[5]) {
                                             case 'maintain':
                                                 $chosen_route = 'app/modules/subcategory/controller/maintain.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'brand-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'maintain':
+                                                $chosen_route = 'app/modules/brand/controller/maintain.php';
                                                 break;
                                         }
                                         break;
@@ -158,11 +168,11 @@ if ($route_parts[0] == 'pytyvo') {
                                 break;
                             case 'inventory':
                                 switch ($route_parts[4]) {
-                                    case 'brand-manager':
+                                    case 'family-manager':
                                         switch ($route_parts[5]) {
                                             case 'page':
                                                 $page = (int) $route_parts[6];
-                                                $chosen_route = 'app/modules/brand/controller/manager.php';
+                                                $chosen_route = 'app/modules/family/controller/manager.php';
                                                 break;
                                         }
                                         break;
@@ -179,6 +189,14 @@ if ($route_parts[0] == 'pytyvo') {
                                             case 'page':
                                                 $page = (int) $route_parts[6];
                                                 $chosen_route = 'app/modules/subcategory/controller/manager.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'brand-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'page':
+                                                $page = (int) $route_parts[6];
+                                                $chosen_route = 'app/modules/brand/controller/manager.php';
                                                 break;
                                         }
                                         break;

@@ -832,6 +832,31 @@ DELIMITER ;
 -- BEGIN: FAMILIES
 --
 
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'families' table.                          *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_family_reccount $$
+
+CREATE FUNCTION fn_family_reccount(p_company_id MEDIUMINT UNSIGNED)
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        families
+    WHERE
+        company_id = p_company_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
 /* -------------------------------------------------------------------------- *
  * FN to find out if an ID exists in the 'families' table.                    *
  * -------------------------------------------------------------------------- */
@@ -974,6 +999,41 @@ END $$
 DELIMITER ;
 
 /* -------------------------------------------------------------------------- *
+ * SP to get all rows from the 'families' table.                              *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_family_get_all_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_family_get_all_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                         IN p_limit MEDIUMINT UNSIGNED,
+                                                         IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        company_id,
+        id,
+        name,
+        COALESCE(p1, 0) p1,
+        COALESCE(p2, 0) p2,
+        COALESCE(p3, 0) p3,
+        COALESCE(p4, 0) p4,
+        COALESCE(p5, 0) p5,
+        active,
+        created_at,
+        updated_at
+    FROM
+        families
+    WHERE
+        company_id = p_company_id
+    ORDER BY
+        name
+    LIMIT
+        p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
  * SP to get all active rows from the 'families' table.                       *
  * -------------------------------------------------------------------------- */
 DELIMITER $$
@@ -1070,6 +1130,105 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'families' table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_family_get_by_any $$
+
+CREATE PROCEDURE sp_family_get_by_any(IN p_company_id MEDIUMINT UNSIGNED,
+                                      IN p_any VARCHAR(50))
+BEGIN
+    SELECT
+        company_id,
+        id,
+        name,
+        COALESCE(p1, 0) p1,
+        COALESCE(p2, 0) p2,
+        COALESCE(p3, 0) p3,
+        COALESCE(p4, 0) p4,
+        COALESCE(p5, 0) p5,
+        active,
+        created_at,
+        updated_at
+    FROM
+        families
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    ORDER BY
+        name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'families' table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_family_get_by_any_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_family_get_by_any_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                            IN p_any VARCHAR(50),
+                                                            IN p_limit MEDIUMINT UNSIGNED,
+                                                            IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        company_id,
+        id,
+        name,
+        COALESCE(p1, 0) p1,
+        COALESCE(p2, 0) p2,
+        COALESCE(p3, 0) p3,
+        COALESCE(p4, 0) p4,
+        COALESCE(p5, 0) p5,
+        active,
+        created_at,
+        updated_at
+    FROM
+        families
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    ORDER BY
+        name
+    LIMIT
+        p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'families' table.                          *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_family_get_by_any_reccount $$
+
+CREATE FUNCTION fn_family_get_by_any_reccount(p_company_id MEDIUMINT UNSIGNED,
+                                              p_any VARCHAR(50))
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        families
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
 
 /* -------------------------------------------------------------------------- *
  * SP to insert rows into the 'families' table.                               *
@@ -1454,6 +1613,42 @@ END $$
 
 DELIMITER ;
 
+/* -------------------------------------------------------------------------- *
+ * SP to delete rows into the 'families' table.                               *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_family_delete $$
+
+CREATE PROCEDURE sp_family_delete(IN p_user_id MEDIUMINT UNSIGNED,
+                                  IN p_company_id MEDIUMINT UNSIGNED,
+                                  IN p_id MEDIUMINT UNSIGNED)
+BEGIN
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'family', 'delete');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_family_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No existe.│';
+    END IF;
+    -- end { validate: id }
+
+    DELETE FROM families WHERE company_id = p_company_id AND id = p_id;
+END $$
+
+DELIMITER ;
+
 --
 -- END: FAMILIES
 --
@@ -1631,7 +1826,7 @@ CREATE PROCEDURE sp_category_get_all_with_limit_and_offset(IN p_company_id MEDIU
                                                            IN p_limit MEDIUMINT UNSIGNED,
                                                            IN p_offset MEDIUMINT UNSIGNED)
 BEGIN
-    SELECT * FROM categories WHERE company_id = p_company_id ORDER BY name LIMIT p_limit, p_offset;
+    SELECT * FROM categories WHERE company_id = p_company_id ORDER BY name LIMIT p_limit OFFSET p_offset;
 END $$
 
 DELIMITER ;
@@ -1727,7 +1922,7 @@ BEGIN
     ORDER BY
         name
     LIMIT
-        p_limit, p_offset;
+        p_limit OFFSET p_offset;
 END $$
 
 DELIMITER ;
@@ -2136,7 +2331,7 @@ CREATE PROCEDURE sp_subcategory_get_all_with_limit_and_offset(IN p_company_id ME
                                                               IN p_limit MEDIUMINT UNSIGNED,
                                                               IN p_offset MEDIUMINT UNSIGNED)
 BEGIN
-    SELECT * FROM subcategories WHERE company_id = p_company_id ORDER BY name LIMIT p_limit, p_offset;
+    SELECT * FROM subcategories WHERE company_id = p_company_id ORDER BY name LIMIT p_limit OFFSET p_offset;
 END $$
 
 DELIMITER ;
@@ -2232,7 +2427,7 @@ BEGIN
     ORDER BY
         name
     LIMIT
-        p_limit, p_offset;
+        p_limit OFFSET p_offset;
 END $$
 
 DELIMITER ;
@@ -2641,7 +2836,7 @@ CREATE PROCEDURE sp_brand_get_all_with_limit_and_offset(IN p_company_id MEDIUMIN
                                                         IN p_limit MEDIUMINT UNSIGNED,
                                                         IN p_offset MEDIUMINT UNSIGNED)
 BEGIN
-    SELECT * FROM brands WHERE company_id = p_company_id ORDER BY name LIMIT p_limit, p_offset;
+    SELECT * FROM brands WHERE company_id = p_company_id ORDER BY name LIMIT p_limit OFFSET p_offset;
 END $$
 
 DELIMITER ;
@@ -2737,7 +2932,7 @@ BEGIN
     ORDER BY
         name
     LIMIT
-        p_limit, p_offset;
+        p_limit OFFSET p_offset;
 END $$
 
 DELIMITER ;
@@ -3621,7 +3816,7 @@ CREATE PROCEDURE sp_country_get_all_with_limit_and_offset(IN p_company_id MEDIUM
                                                           IN p_limit MEDIUMINT UNSIGNED,
                                                           IN p_offset MEDIUMINT UNSIGNED)
 BEGIN
-    SELECT * FROM countries WHERE company_id = p_company_id ORDER BY name LIMIT p_limit, p_offset;
+    SELECT * FROM countries WHERE company_id = p_company_id ORDER BY name LIMIT p_limit OFFSET p_offset;
 END $$
 
 DELIMITER ;
@@ -3734,7 +3929,7 @@ BEGIN
     ORDER BY
         name
     LIMIT
-        p_limit, p_offset;
+        p_limit OFFSET p_offset;
 END $$
 
 DELIMITER ;

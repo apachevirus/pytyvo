@@ -23,11 +23,7 @@ include_once 'template/navbar.inc.phtml';
 <div class="container rounded">
     <div class="row p-4" style="background: white;">
         <div class="col-md-12">
-            <a class="quick-btn" href="#">
-                <i class="far fa-window-maximize" style="font-size: 1.5rem;"></i>
-                <span>Usuarios</span>
-            </a>
-            <a class="quick-btn" href="#">
+            <a class="quick-btn" href="<?php echo ROUTE_ADMINISTRATION_SETUP_INVENTORY_FAMILY_MANAGER; ?>">
                 <i class="far fa-window-maximize" style="font-size: 1.5rem;"></i>
                 <span>Familias</span>
             </a>
