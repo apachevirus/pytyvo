@@ -3181,6 +3181,31 @@ DELIMITER ;
 -- BEGIN: MEASUREMENT_UNITS
 --
 
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'measurement_units' table.                 *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_measurement_unit_reccount $$
+
+CREATE FUNCTION fn_measurement_unit_reccount(p_company_id MEDIUMINT UNSIGNED)
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        measurement_units
+    WHERE
+        company_id = p_company_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
 /* -------------------------------------------------------------------------- *
  * FN to find out if an ID exists in the 'measurement_units' table.           *
  * -------------------------------------------------------------------------- */
@@ -3238,7 +3263,7 @@ END $$
 DELIMITER ;
 
 /* -------------------------------------------------------------------------- *
- * FN to find out if a symbol exists in the 'measurement_units' table.        *
+ * FN to find out if a area code exists in the 'measurement_units' table.     *
  * -------------------------------------------------------------------------- */
 DELIMITER $$
 
@@ -3334,6 +3359,22 @@ END $$
 DELIMITER ;
 
 /* -------------------------------------------------------------------------- *
+ * SP to get all rows from the 'measurement_units' table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_measurement_unit_get_all_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_measurement_unit_get_all_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                                   IN p_limit MEDIUMINT UNSIGNED,
+                                                                   IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT * FROM measurement_units WHERE company_id = p_company_id ORDER BY name LIMIT p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
  * SP to get all active rows from the 'measurement_units' table.              *
  * -------------------------------------------------------------------------- */
 DELIMITER $$
@@ -3378,6 +3419,103 @@ END $$
 DELIMITER ;
 
 /* -------------------------------------------------------------------------- *
+ * SP to get rows by symbol from the 'measurement_units' table.               *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_measurement_unit_get_by_symbol $$
+
+CREATE PROCEDURE sp_measurement_unit_get_by_symbol(IN p_company_id MEDIUMINT UNSIGNED,
+                                                   IN p_symbol VARCHAR(5))
+BEGIN
+    SELECT * FROM measurement_units WHERE company_id = p_company_id AND symbol LIKE p_symbol ORDER BY name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'measurement_units' table.            *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_measurement_unit_get_by_any $$
+
+CREATE PROCEDURE sp_measurement_unit_get_by_any(IN p_company_id MEDIUMINT UNSIGNED,
+                                                IN p_any VARCHAR(50))
+BEGIN
+    SELECT
+        *
+    FROM
+        measurement_units
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any OR
+        symbol LIKE p_any)
+    ORDER BY
+        name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'measurement_units' table.            *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_measurement_unit_get_by_any_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_measurement_unit_get_by_any_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                                      IN p_any VARCHAR(50),
+                                                                      IN p_limit MEDIUMINT UNSIGNED,
+                                                                      IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        *
+    FROM
+        measurement_units
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any OR
+        symbol LIKE p_any)
+    ORDER BY
+        name
+    LIMIT
+        p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'measurement_units' table.                 *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_measurement_unit_get_by_any_reccount $$
+
+CREATE FUNCTION fn_measurement_unit_get_by_any_reccount(p_company_id MEDIUMINT UNSIGNED,
+                                                        p_any VARCHAR(50))
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        measurement_units
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any OR
+        symbol LIKE p_any)
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+/* -------------------------------------------------------------------------- *
  * SP to insert rows into the 'measurement_units' table.                      *
  * -------------------------------------------------------------------------- */
 DELIMITER $$
@@ -3388,7 +3526,7 @@ CREATE PROCEDURE sp_measurement_unit_insert(IN p_user_id MEDIUMINT UNSIGNED,
                                             IN p_company_id MEDIUMINT UNSIGNED,
                                             IN p_id MEDIUMINT UNSIGNED,
                                             IN p_name VARCHAR(50),
-                                            IN p_symbol VARCHAR(15),
+                                            IN p_symbol VARCHAR(5),
                                             IN p_divisible TINYINT UNSIGNED,
                                             IN p_active TINYINT UNSIGNED)
 BEGIN
@@ -3452,16 +3590,6 @@ BEGIN
     END IF;
     -- end { validate: symbol }
 
-    -- begin { validate: divisible }
-    IF p_divisible IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Divisible: No puede ser nulo.│';
-    END IF;
-
-    IF p_divisible NOT IN (0, 1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Divisible: Debe ser 0 ó 1.│';
-    END IF;
-    -- end { validate: divisible }
-
     -- begin { validate: active }
     IF p_active IS NULL THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: No puede ser nulo.│';
@@ -3489,7 +3617,7 @@ CREATE PROCEDURE sp_measurement_unit_update(IN p_user_id MEDIUMINT UNSIGNED,
                                             IN p_company_id MEDIUMINT UNSIGNED,
                                             IN p_id MEDIUMINT UNSIGNED,
                                             IN p_name VARCHAR(50),
-                                            IN p_symbol VARCHAR(15),
+                                            IN p_symbol VARCHAR(5),
                                             IN p_divisible TINYINT UNSIGNED,
                                             IN p_active TINYINT UNSIGNED)
 BEGIN
@@ -3554,16 +3682,6 @@ BEGIN
     END IF;
     -- end { validate: symbol }
 
-    -- begin { validate: divisible }
-    IF p_divisible IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Divisible: No puede ser nulo.│';
-    END IF;
-
-    IF p_divisible NOT IN (0, 1) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Divisible: Debe ser 0 ó 1.│';
-    END IF;
-    -- end { validate: divisible }
-
     -- begin { validate: active }
     IF p_active IS NULL THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: No puede ser nulo.│';
@@ -3607,6 +3725,42 @@ BEGIN
             company_id = p_company_id AND
             id = p_id;
     END IF;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to delete rows into the 'measurement_units' table.                      *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_measurement_unit_delete $$
+
+CREATE PROCEDURE sp_measurement_unit_delete(IN p_user_id MEDIUMINT UNSIGNED,
+                                            IN p_company_id MEDIUMINT UNSIGNED,
+                                            IN p_id MEDIUMINT UNSIGNED)
+BEGIN
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'measurement_unit', 'delete');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_measurement_unit_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No existe.│';
+    END IF;
+    -- end { validate: id }
+
+    DELETE FROM measurement_units WHERE company_id = p_company_id AND id = p_id;
 END $$
 
 DELIMITER ;
@@ -4020,19 +4174,19 @@ BEGIN
 
     -- begin { validate: area_code }
     IF p_area_code IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Símbolo: No puede ser nulo.│';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Prefijo telefónico: No puede ser nulo.│';
     END IF;
 
     IF p_area_code = '' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Símbolo: No puede quedar en blanco.│';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Prefijo telefónico: No puede quedar en blanco.│';
     END IF;
 
     IF LENGTH(p_area_code) > 5 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Símbolo: La longitud debe ser como máximo de 5 caracteres.│';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Prefijo telefónico: La longitud debe ser como máximo de 5 caracteres.│';
     END IF;
 
     IF (SELECT fn_country_area_code_exists(p_company_id, p_area_code)) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Símbolo: Ya existe.│';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Prefijo telefónico: Ya existe.│';
     END IF;
     -- end { validate: area_code }
 
@@ -4110,19 +4264,19 @@ BEGIN
 
     -- begin { validate: area_code }
     IF p_area_code IS NULL THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Símbolo: No puede ser nulo.│';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Prefijo telefónico: No puede ser nulo.│';
     END IF;
 
     IF p_area_code = '' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Símbolo: No puede quedar en blanco.│';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Prefijo telefónico: No puede quedar en blanco.│';
     END IF;
 
     IF LENGTH(p_area_code) > 5 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Símbolo: La longitud debe ser como máximo de 5 caracteres.│';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Prefijo telefónico: La longitud debe ser como máximo de 5 caracteres.│';
     END IF;
 
     IF EXISTS(SELECT * FROM countries WHERE company_id = p_company_id AND id <> p_id AND UPPER(area_code) LIKE UPPER(p_area_code)) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Símbolo: Ya existe.│';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Prefijo telefónico: Ya existe.│';
     END IF;
     -- end { validate: area_code }
 

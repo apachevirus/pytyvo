@@ -4,22 +4,22 @@ include_once 'app/core/functions.inc.php';
 include_once 'app/core/SessionControl.inc.php';
 include_once 'app/core/Redirection.inc.php';
 include_once 'app/core/Connection.inc.php';
-include_once dirname(__DIR__) . '/model/Category.inc.php';
-include_once dirname(__DIR__) . '/model/CategoryRepository.inc.php';
-include_once dirname(__DIR__) . '/model/CategoryValidator.inc.php';
+include_once dirname(__DIR__) . '/model/MeasurementUnit.inc.php';
+include_once dirname(__DIR__) . '/model/MeasurementUnitRepository.inc.php';
+include_once dirname(__DIR__) . '/model/MeasurementUnitValidator.inc.php';
 
 if (!SessionControl::session_started()) {
     Redirection::redirect(ROUTE_SIGNIN);
 }
 
 # begin { variables and constants setup }
-$entity = 'category';
-$entity_repository = ucfirst($entity) . 'Repository';
-$entity_validator = ucfirst($entity) . 'Validator';
-$title = 'rubro';
+$entity = 'MeasurementUnit';
+$entity_repository = $entity . 'Repository';
+$entity_validator = $entity . 'Validator';
+$title = 'unidad de medida';
 
-define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_CATEGORY_MANAGER);
-define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_INVENTORY_CATEGORY_MAINTAIN);
+define('ROUTE_MANAGER', ROUTE_ADMINISTRATION_SETUP_INVENTORY_MEASUREMENT_UNIT_MANAGER);
+define('ROUTE_MAINTAIN', ROUTE_ADMINISTRATION_SETUP_INVENTORY_MEASUREMENT_UNIT_MAINTAIN);
 # end { variables and constants setup }
 
 $request = get_request();
@@ -47,6 +47,8 @@ if (isset($_POST['request'])) {
             $_SESSION['company_id'],
             (int) $_POST['id'],
             $_POST['name'],
+            $_POST['symbol'],
+            (bool) ((isset($_POST['divisible']) && $_POST['divisible'] == "on") ? 1 : 0),
             (bool) ((isset($_POST['active']) && $_POST['active'] == "on") ? 1 : 0)
         );
 
@@ -55,6 +57,8 @@ if (isset($_POST['request'])) {
                 $validator->get_company_id(),
                 $validator->get_id(),
                 $validator->get_name(),
+                $validator->get_symbol(),
+                $validator->is_divisible(),
                 $validator->is_active(),
                 '',   // created_at
                 ''    // updated_at
@@ -90,7 +94,7 @@ if (isset($_POST['request'])) {
 
 Connection::disconnect();
 
-$title = get_title($request, $title);
+$title = str_replace('Nuevo', 'Nueva', get_title($request, $title));
 
 include_once 'template/document-declaration.inc.phtml';
 include_once 'template/navbar.inc.phtml';

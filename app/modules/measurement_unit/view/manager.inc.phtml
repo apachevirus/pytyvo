@@ -5,7 +5,7 @@
         <li class="breadcrumb-item"><a href="<?php echo ROUTE_ADMINISTRATION; ?>">Gesti&#243;n</a></li>
         <li class="breadcrumb-item"><a href="<?php echo ROUTE_ADMINISTRATION_SETUP; ?>">Definiciones</a></li>
         <li class="breadcrumb-item"><a href="<?php echo ROUTE_ADMINISTRATION_SETUP_INVENTORY; ?>">Inventario</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Rubros</li>
+        <li class="breadcrumb-item active" aria-current="page">Unidades de medida</li>
     </ol>
 </nav>
 <!-- end { breadcrumb } -->
@@ -15,7 +15,7 @@
     <div class="row mb-5">
         <div class="col-md-6">
             <h1>
-                <i class="icofont icofont-listing-number"></i> Rubros
+                <i class="icofont icofont-compass-alt-3"></i> Unidades de medida
                 <span class="badge badge-secondary" style="font-size: 0.75rem; vertical-align: middle;" title="Cantidad de registros"><?php echo $reccount; ?></span>
                 <a class="btn btn-outline-secondary btn-sm" role="button" href="<?php echo ROUTE_MANAGER; ?>" title="Recargar la p&#225;gina">
                     <span class="icofont icofont-refresh"></span>
@@ -69,6 +69,8 @@
                         <tr>
                             <th class="text-center">C&#243;digo</th>
                             <th>Nombre</th>
+                            <th>S&#237;mbolo</th>
+                            <th class="text-center">Divisible</th>
                             <th class="text-center">Vigente</th>
                             <th></th>
                             <th></th>
@@ -83,6 +85,8 @@
                             <tr>
                                 <td class="text-center"><?php echo $row->get_id(); ?></td>
                                 <td><?php echo $row->get_name(); ?></td>
+                                <td><?php echo $row->get_symbol(); ?></td>
+                                <td class="text-center"><?php if ($row->is_divisible()) echo 'S&#237;'; else echo 'No'; ?></td>
                                 <td class="text-center"><?php if ($row->is_active()) echo 'S&#237;'; else echo 'No'; ?></td>
                                 <td class="text-right">
                                     <form method="post" action="<?php echo ROUTE_MAINTAIN; ?>">

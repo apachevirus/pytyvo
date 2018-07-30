@@ -52,6 +52,20 @@ class MeasurementUnitValidator extends BaseValidator {
         return '';
     }
 
+    private function validate_divisible($divisible) {
+        if (!isset($divisible) || !is_bool($divisible)) {
+            return 'Por favor, escribe si es divisible.';
+        } else {
+            $this->divisible = $divisible;
+        }
+
+        if ($divisible < 0 || $divisible > 1) {
+            return 'La divisibilidad est&#225; determinada por un valor entre 0 y 1.';
+        }
+
+        return '';
+    }
+
     public function get_symbol() {
         return $this->symbol;
     }
