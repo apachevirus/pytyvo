@@ -4373,8 +4373,538 @@ DELIMITER ;
 
 
 --
+-- BEGIN: MACHINES
+--
+
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'machines' table.                          *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_machine_reccount $$
+
+CREATE FUNCTION fn_machine_reccount(p_company_id MEDIUMINT UNSIGNED)
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        machines
+    WHERE
+        company_id = p_company_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+/* -------------------------------------------------------------------------- *
+ * FN to find out if an ID exists in the 'machines' table.                    *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_machine_id_exists $$
+
+CREATE FUNCTION fn_machine_id_exists(p_company_id MEDIUMINT UNSIGNED,
+                                     p_id MEDIUMINT UNSIGNED)
+       RETURNS TINYINT UNSIGNED
+BEGIN
+    DECLARE v_row TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*)
+    FROM
+        machines
+    WHERE
+        company_id = p_company_id AND
+        id = p_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to find out if a name exists in the 'machines' table.                   *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_machine_name_exists $$
+
+CREATE FUNCTION fn_machine_name_exists(p_company_id MEDIUMINT UNSIGNED,
+                                       p_name VARCHAR(50))
+       RETURNS TINYINT UNSIGNED
+BEGIN
+    DECLARE v_row TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*)
+    FROM
+        machines
+    WHERE
+        company_id = p_company_id AND
+        UPPER(name) LIKE UPPER(p_name)
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to find out if an ID is active in the 'machines' table.                 *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_machine_is_active $$
+
+CREATE FUNCTION fn_machine_is_active(p_company_id MEDIUMINT UNSIGNED,
+                                     p_id MEDIUMINT UNSIGNED)
+       RETURNS TINYINT UNSIGNED
+BEGIN
+    DECLARE v_row TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*)
+    FROM
+        machines
+    WHERE
+        company_id = p_company_id AND
+        id = p_id AND
+        active = 1
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to get a new ID for the 'machines' table.                               *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_machine_new_id $$
+
+CREATE FUNCTION fn_machine_new_id(p_company_id MEDIUMINT UNSIGNED)
+       RETURNS MEDIUMINT UNSIGNED
+BEGIN
+    DECLARE v_new_id MEDIUMINT UNSIGNED DEFAULT 1;
+
+    loop_label: LOOP
+        IF NOT EXISTS(SELECT * FROM machines WHERE company_id = p_company_id AND id = v_new_id) THEN
+            LEAVE loop_label;
+        ELSE
+            SET v_new_id = v_new_id + 1;
+        END IF;
+    END LOOP;
+
+    RETURN v_new_id;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get all rows from the 'machines' table.                              *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_get_all $$
+
+CREATE PROCEDURE sp_machine_get_all(IN p_company_id MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT * FROM machines WHERE company_id = p_company_id ORDER BY name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get all rows from the 'machines' table.                              *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_get_all_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_machine_get_all_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                          IN p_limit MEDIUMINT UNSIGNED,
+                                                          IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT * FROM machines WHERE company_id = p_company_id ORDER BY name LIMIT p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get all active rows from the 'machines' table.                       *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_get_all_active $$
+
+CREATE PROCEDURE sp_machine_get_all_active(IN p_company_id MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT * FROM machines WHERE company_id = p_company_id AND active = 1 ORDER BY name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by ID from the 'machines' table.                            *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_get_by_id $$
+
+CREATE PROCEDURE sp_machine_get_by_id(IN p_company_id MEDIUMINT UNSIGNED,
+                                      IN p_id MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT * FROM machines WHERE company_id = p_company_id AND id = p_id ORDER BY name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by name from the 'machines' table.                          *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_get_by_name $$
+
+CREATE PROCEDURE sp_machine_get_by_name(IN p_company_id MEDIUMINT UNSIGNED,
+                                        IN p_name VARCHAR(50))
+BEGIN
+    SELECT * FROM machines WHERE company_id = p_company_id AND name LIKE p_name ORDER BY name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'machines' table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_get_by_any $$
+
+CREATE PROCEDURE sp_machine_get_by_any(IN p_company_id MEDIUMINT UNSIGNED,
+                                       IN p_any VARCHAR(50))
+BEGIN
+    SELECT
+        *
+    FROM
+        machines
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    ORDER BY
+        name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'machines' table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_get_by_any_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_machine_get_by_any_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                             IN p_any VARCHAR(50),
+                                                             IN p_limit MEDIUMINT UNSIGNED,
+                                                             IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        *
+    FROM
+        machines
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    ORDER BY
+        name
+    LIMIT
+        p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'machines' table.                          *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_machine_get_by_any_reccount $$
+
+CREATE FUNCTION fn_machine_get_by_any_reccount(p_company_id MEDIUMINT UNSIGNED,
+                                               p_any VARCHAR(50))
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        machines
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+/* -------------------------------------------------------------------------- *
+ * SP to insert rows into the 'machines' table.                               *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_insert $$
+
+CREATE PROCEDURE sp_machine_insert(IN p_user_id MEDIUMINT UNSIGNED,
+                                   IN p_company_id MEDIUMINT UNSIGNED,
+                                   IN p_id MEDIUMINT UNSIGNED,
+                                   IN p_name VARCHAR(50),
+                                   IN p_active TINYINT UNSIGNED)
+BEGIN
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'machine', 'create');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SELECT fn_machine_new_id(p_company_id) INTO p_id;
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF (SELECT fn_machine_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Ya existe.│';
+    END IF;
+    -- end { validate: id }
+
+    -- begin { validate: name }
+    IF p_name IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: No puede ser nulo.│';
+    END IF;
+
+    IF p_name = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: No puede quedar en blanco.│';
+    END IF;
+
+    IF LENGTH(p_name) > 50 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: La longitud debe ser como máximo de 50 caracteres.│';
+    END IF;
+
+    IF (SELECT fn_machine_name_exists(p_company_id, p_name)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: Ya existe.│';
+    END IF;
+    -- end { validate: name }
+
+    -- begin { validate: active }
+    IF p_active IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: No puede ser nulo.│';
+    END IF;
+
+    IF p_active NOT IN (0, 1) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: Debe ser 0 ó 1.│';
+    END IF;
+    -- end { validate: active }
+
+    INSERT INTO machines (company_id, id, name, active)
+        VALUES (p_company_id, p_id, p_name, p_active);
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to update rows from the 'machines' table.                               *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_update $$
+
+CREATE PROCEDURE sp_machine_update(IN p_user_id MEDIUMINT UNSIGNED,
+                                   IN p_company_id MEDIUMINT UNSIGNED,
+                                   IN p_id MEDIUMINT UNSIGNED,
+                                   IN p_name VARCHAR(50),
+                                   IN p_active TINYINT UNSIGNED)
+BEGIN
+    DECLARE v_name VARCHAR(50);
+    DECLARE v_active TINYINT UNSIGNED;
+
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'machine', 'write');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_machine_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No existe.│';
+    END IF;
+    -- end { validate: id }
+
+    -- begin { validate: name }
+    IF p_name IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: No puede ser nulo.│';
+    END IF;
+
+    IF p_name = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: No puede quedar en blanco.│';
+    END IF;
+
+    IF LENGTH(p_name) > 50 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: La longitud debe ser como máximo de 50 caracteres.│';
+    END IF;
+
+    IF EXISTS(SELECT * FROM machines WHERE company_id = p_company_id AND id <> p_id AND UPPER(name) LIKE UPPER(p_name)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: Ya existe.│';
+    END IF;
+    -- end { validate: name }
+
+    -- begin { validate: active }
+    IF p_active IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: No puede ser nulo.│';
+    END IF;
+
+    IF p_active NOT IN (0, 1) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: Debe ser 0 ó 1.│';
+    END IF;
+    -- end { validate: active }
+
+    SELECT
+        name,
+        active
+    FROM
+        machines
+    WHERE
+        company_id = p_company_id AND
+        id = p_id
+    INTO
+        v_name,
+        v_active;
+
+    IF v_name <> p_name OR
+       v_active <> p_active THEN
+
+        UPDATE
+            machines
+        SET
+            name = p_name,
+            active = p_active,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE
+            company_id = p_company_id AND
+            id = p_id;
+    END IF;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to delete rows into the 'machines' table.                               *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_machine_delete $$
+
+CREATE PROCEDURE sp_machine_delete(IN p_user_id MEDIUMINT UNSIGNED,
+                                   IN p_company_id MEDIUMINT UNSIGNED,
+                                   IN p_id MEDIUMINT UNSIGNED)
+BEGIN
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'machine', 'delete');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_machine_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No existe.│';
+    END IF;
+    -- end { validate: id }
+
+    DELETE FROM machines WHERE company_id = p_company_id AND id = p_id;
+END $$
+
+DELIMITER ;
+
+--
+-- END: MACHINES
+--
+
+
+
+
+
+
+
+
+
+
+--
 -- BEGIN: WO_BRANDS
 --
+
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'wo_brands' table.                         *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_wo_brand_reccount $$
+
+CREATE FUNCTION fn_wo_brand_reccount(p_company_id MEDIUMINT UNSIGNED)
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        wo_brands
+    WHERE
+        company_id = p_company_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
 
 /* -------------------------------------------------------------------------- *
  * FN to find out if an ID exists in the 'wo_brands' table.                   *
@@ -4501,6 +5031,22 @@ END $$
 DELIMITER ;
 
 /* -------------------------------------------------------------------------- *
+ * SP to get all rows from the 'wo_brands' table.                             *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_wo_brand_get_all_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_wo_brand_get_all_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                           IN p_limit MEDIUMINT UNSIGNED,
+                                                           IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT * FROM wo_brands WHERE company_id = p_company_id ORDER BY name LIMIT p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
  * SP to get all active rows from the 'wo_brands' table.                      *
  * -------------------------------------------------------------------------- */
 DELIMITER $$
@@ -4543,6 +5089,85 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'wo_brands' table.                    *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_wo_brand_get_by_any $$
+
+CREATE PROCEDURE sp_wo_brand_get_by_any(IN p_company_id MEDIUMINT UNSIGNED,
+                                        IN p_any VARCHAR(50))
+BEGIN
+    SELECT
+        *
+    FROM
+        wo_brands
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    ORDER BY
+        name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'wo_brands' table.                    *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_wo_brand_get_by_any_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_wo_brand_get_by_any_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                              IN p_any VARCHAR(50),
+                                                              IN p_limit MEDIUMINT UNSIGNED,
+                                                              IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        *
+    FROM
+        wo_brands
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    ORDER BY
+        name
+    LIMIT
+        p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'wo_brands' table.                         *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_wo_brand_get_by_any_reccount $$
+
+CREATE FUNCTION fn_wo_brand_get_by_any_reccount(p_company_id MEDIUMINT UNSIGNED,
+                                                p_any VARCHAR(50))
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        wo_brands
+    WHERE
+        company_id = p_company_id AND
+        (id LIKE p_any OR
+        name LIKE p_any)
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
 
 /* -------------------------------------------------------------------------- *
  * SP to insert rows into the 'wo_brands' table.                              *
@@ -4708,10 +5333,45 @@ END $$
 
 DELIMITER ;
 
+/* -------------------------------------------------------------------------- *
+ * SP to delete rows into the 'wo_brands' table.                              *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_wo_brand_delete $$
+
+CREATE PROCEDURE sp_wo_brand_delete(IN p_user_id MEDIUMINT UNSIGNED,
+                                    IN p_company_id MEDIUMINT UNSIGNED,
+                                    IN p_id MEDIUMINT UNSIGNED)
+BEGIN
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'wo_brand', 'delete');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_wo_brand_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No existe.│';
+    END IF;
+    -- end { validate: id }
+
+    DELETE FROM wo_brands WHERE company_id = p_company_id AND id = p_id;
+END $$
+
+DELIMITER ;
+
 --
 -- END: WO_BRANDS
 --
-
 
 
 

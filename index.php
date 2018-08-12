@@ -55,6 +55,9 @@ if ($route_parts[0] == 'pytyvo') {
                             case 'inventory':
                                 $chosen_route = 'app/modules/system/controller/inventory.php';
                                 break;
+                            case 'service':
+                                $chosen_route = 'app/modules/system/controller/service.php';
+                                break;
                         }
                         break;
                 }
@@ -89,6 +92,19 @@ if ($route_parts[0] == 'pytyvo') {
                                         break;
                                     case 'measurement-unit-manager':
                                         $chosen_route = 'app/modules/measurement_unit/controller/manager.php';
+                                        break;
+                                }
+                                break;
+                            case 'service':
+                                switch ($route_parts[4]) {
+                                    case 'machine-manager':
+                                        $chosen_route = 'app/modules/machine/controller/manager.php';
+                                        break;
+                                    case 'wo-brand-manager':
+                                        $chosen_route = 'app/modules/wo_brand/controller/manager.php';
+                                        break;
+                                    case 'model-manager':
+                                        $chosen_route = 'app/modules/model/controller/manager.php';
                                         break;
                                 }
                                 break;
@@ -148,6 +164,31 @@ if ($route_parts[0] == 'pytyvo') {
                                         switch ($route_parts[5]) {
                                             case 'maintain':
                                                 $chosen_route = 'app/modules/measurement_unit/controller/maintain.php';
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case 'service':
+                                switch ($route_parts[4]) {
+                                    case 'machine-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'maintain':
+                                                $chosen_route = 'app/modules/machine/controller/maintain.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'wo-brand-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'maintain':
+                                                $chosen_route = 'app/modules/wo_brand/controller/maintain.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'model-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'maintain':
+                                                $chosen_route = 'app/modules/model/controller/maintain.php';
                                                 break;
                                         }
                                         break;
@@ -215,6 +256,34 @@ if ($route_parts[0] == 'pytyvo') {
                                             case 'page':
                                                 $page = (int) $route_parts[6];
                                                 $chosen_route = 'app/modules/measurement_unit/controller/manager.php';
+                                                break;
+                                        }
+                                        break;
+                                }
+                                break;
+                            case 'service':
+                                switch ($route_parts[4]) {
+                                    case 'machine-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'page':
+                                                $page = (int) $route_parts[6];
+                                                $chosen_route = 'app/modules/machine/controller/manager.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'wo-brand-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'page':
+                                                $page = (int) $route_parts[6];
+                                                $chosen_route = 'app/modules/wo_brand/controller/manager.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'model-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'page':
+                                                $page = (int) $route_parts[6];
+                                                $chosen_route = 'app/modules/model/controller/manager.php';
                                                 break;
                                         }
                                         break;
