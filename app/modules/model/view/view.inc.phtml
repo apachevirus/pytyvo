@@ -1,0 +1,41 @@
+<div class="d-none">
+    <input type="hidden" name="id" value="<?php echo $model->get_id(); ?>">
+    <input type="hidden" name="curr_machine_id" value="<?php echo $model->get_machine_id(); ?>">
+    <input type="hidden" name="curr_brand_id" value="<?php echo $model->get_brand_id(); ?>">
+</div>
+
+<div class="form-group">
+    <label for="selectMachine">M&#225;quina<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
+    <select class="form-control" id="selectMachine" name="machine_id" disabled readonly>
+        <?php
+        foreach ($machines as $machine) {
+            ?>
+            <option value="<?php echo $machine->get_id(); ?>"<?php if ($machine->get_id() === $model->get_machine_id()) echo ' selected';?>><?php echo $machine->get_name(); ?></option>
+            <?php
+        }
+        ?>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="selectWOBrand">Marca<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
+    <select class="form-control" id="selectWOBrand" name="brand_id" disabled readonly>
+        <?php
+        foreach ($wo_brands as $wo_brand) {
+            ?>
+            <option value="<?php echo $wo_brand->get_id(); ?>"<?php if ($wo_brand->get_id() === $model->get_brand_id()) echo ' selected';?>><?php echo $wo_brand->get_name(); ?></option>
+            <?php
+        }
+        ?>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="inputName">Nombre<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
+    <input type="text" class="form-control" id="inputName" name="name" maxlength="50" style="text-transform: uppercase;" placeholder="" value="<?php echo $model->get_name(); ?>" readonly>
+</div>
+
+<div class="form-check mb-3">
+    <input type="checkbox" class="form-check-input" id="checkActive" name="active" <?php if ($model->is_active()) echo 'checked'; ?> onclick="return false;" disabled readonly>
+    <label class="form-check-label" for="checkActive">Vigente</label>
+</div>

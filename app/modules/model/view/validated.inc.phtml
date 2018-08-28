@@ -1,0 +1,57 @@
+<input type="hidden" name="id" <?php $validator->show_id(); ?>>
+
+<?php
+if (!empty($validator->show_error_company_id()) || !empty($validator->show_error_id())) {
+    ?>
+    <div class="form-group">
+        <?php $validator->show_error_company_id(); ?>
+        <?php $validator->show_error_id(); ?>
+    </div>
+    <?php
+}
+?>
+
+<div class="form-group">
+    <label for="selectMachine">M&#225;quina<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
+    <select class="form-control" id="selectMachine" name="machine_id" required autofocus>
+        <option value="0">Selecciona una m&#225;quina</option>
+        <?php
+        foreach ($machines as $machine) {
+            ?>
+            <option value="<?php echo $machine->get_id(); ?>"<?php if ((int) $machine->get_id() === $validator->get_machine_id()) echo ' selected';?>><?php echo $machine->get_name(); ?></option>
+            <?php
+        }
+        ?>
+    </select>
+    <?php $validator->show_error_machine_id(); ?>
+</div>
+
+<div class="form-group">
+    <label for="selectWOBrand">Marca<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
+    <select class="form-control" id="selectWOBrand" name="brand_id" required>
+        <option value="0">Selecciona una marca</option>
+        <?php
+        foreach ($wo_brands as $wo_brand) {
+            ?>
+            <option value="<?php echo $wo_brand->get_id(); ?>"<?php if ((int) $wo_brand->get_id() === $validator->get_brand_id()) echo ' selected';?>><?php echo $wo_brand->get_name(); ?></option>
+            <?php
+        }
+        ?>
+    </select>
+    <?php $validator->show_error_brand_id(); ?>
+</div>
+
+<div class="form-group">
+    <label for="inputName">Nombre<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
+    <input type="text" class="form-control" id="inputName" name="name" maxlength="50" style="text-transform: uppercase;" placeholder="" <?php $validator->show_name(); ?> required autofocus>
+    <?php $validator->show_error_name(); ?>
+</div>
+
+<div class="form-check mb-3">
+    <input type="checkbox" class="form-check-input" id="checkActive" name="active" <?php $validator->show_active(); ?>>
+    <label class="form-check-label" for="checkActive">Vigente</label>
+</div>
+
+<div class="form-group">
+    <?php $validator->show_error_active(); ?>
+</div>
