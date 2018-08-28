@@ -42,6 +42,16 @@ if ($route_parts[0] == 'pytyvo') {
                         break;
                 }
                 break;
+            case 'ajax':
+                switch ($route_parts[2]) {
+                    case 'machine-get-all-active':
+                        $chosen_route = 'app/modules/ajax/machine_get_all_active.php';
+                        break;
+                    case 'wo-brand-get-all-active':
+                        $chosen_route = 'app/modules/ajax/wo_brand_get_all_active.php';
+                        break;
+                }
+                break;
         }
     } else if (count($route_parts) == 4) {
         switch ($route_parts[1]) {

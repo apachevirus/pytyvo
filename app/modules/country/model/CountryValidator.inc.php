@@ -5,8 +5,8 @@ include_once 'CountryRepository.inc.php';
 
 class CountryValidator extends BaseValidator {
 
-    protected $area_code = '';
-    protected $error_area_code = '';
+    private $area_code = '';
+    private $error_area_code = '';
 
     public function __construct($connection, $company_id, $id, $name, $area_code, $active) {
         $this->repository = 'CountryRepository';
@@ -18,7 +18,7 @@ class CountryValidator extends BaseValidator {
         $this->error_active = $this->validate_active($active);
     }
 
-    protected function validate_area_code($connection, $company_id, $area_code) {
+    private function validate_area_code($connection, $company_id, $area_code) {
         if (!$this->variable_initiated($area_code)) {
             return 'Por favor, escribe un prefijo telef&#243;nico.';
         } else {

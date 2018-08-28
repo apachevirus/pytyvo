@@ -363,6 +363,42 @@ ALTER TABLE wo_brands
         CHECK (active IN (0, 1));
 
 /* -------------------------------------------------------------------------- */
+CREATE TABLE models (
+    company_id MEDIUMINT UNSIGNED NOT NULL,
+    id MEDIUMINT UNSIGNED NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    machine_id MEDIUMINT UNSIGNED NOT NULL,
+    brand_id MEDIUMINT UNSIGNED NOT NULL,
+    active TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NULL DEFAULT NULL
+) ENGINE=InnoDB;
+
+ALTER TABLE models
+    ADD CONSTRAINT pk_models_id
+        PRIMARY KEY (company_id, id),
+    ADD CONSTRAINT fk_models_company_id
+        FOREIGN KEY (company_id) REFERENCES companies (id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    ADD CONSTRAINT fk_models_machine_id
+        FOREIGN KEY (company_id, machine_id) REFERENCES machines (company_id, id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    ADD CONSTRAINT fk_models_brand_id
+        FOREIGN KEY (company_id, brand_id) REFERENCES wo_brands (company_id, id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    ADD CONSTRAINT uk_models_name
+        UNIQUE KEY (company_id, name, machine_id, brand_id),
+    ADD CONSTRAINT chk_models_id
+        CHECK (id > 0),
+    ADD CONSTRAINT chk_models_name
+        CHECK (name <> ''),
+    ADD CONSTRAINT chk_models_active
+        CHECK (active IN (0, 1));
+
+/* -------------------------------------------------------------------------- */
 CREATE TABLE suppliers (
     company_id MEDIUMINT UNSIGNED NOT NULL,
     id MEDIUMINT UNSIGNED NOT NULL,

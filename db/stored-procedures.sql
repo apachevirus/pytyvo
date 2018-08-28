@@ -5381,6 +5381,766 @@ DELIMITER ;
 
 
 
+--
+-- BEGIN: MODELS
+--
+
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'models' table.                            *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_model_reccount $$
+
+CREATE FUNCTION fn_model_reccount(p_company_id MEDIUMINT UNSIGNED)
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        models
+    WHERE
+        company_id = p_company_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+/* -------------------------------------------------------------------------- *
+ * FN to find out if an ID exists in the 'models' table.                      *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_model_id_exists $$
+
+CREATE FUNCTION fn_model_id_exists(p_company_id MEDIUMINT UNSIGNED,
+                                   p_id MEDIUMINT UNSIGNED)
+       RETURNS TINYINT UNSIGNED
+BEGIN
+    DECLARE v_row TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*)
+    FROM
+        models
+    WHERE
+        company_id = p_company_id AND
+        id = p_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to find out if a name exists in the 'models' table.                     *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_model_name_exists $$
+
+CREATE FUNCTION fn_model_name_exists(p_company_id MEDIUMINT UNSIGNED,
+                                     p_name VARCHAR(50),
+                                     p_machine_id MEDIUMINT UNSIGNED,
+                                     p_brand_id MEDIUMINT UNSIGNED)
+       RETURNS TINYINT UNSIGNED
+BEGIN
+    DECLARE v_row TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*)
+    FROM
+        models
+    WHERE
+        company_id = p_company_id AND
+        UPPER(name) LIKE UPPER(p_name) AND
+        machine_id = p_machine_id AND
+        brand_id = p_brand_id
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to find out if an ID is active in the 'models' table.                   *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_model_is_active $$
+
+CREATE FUNCTION fn_model_is_active(p_company_id MEDIUMINT UNSIGNED,
+                                   p_id MEDIUMINT UNSIGNED)
+       RETURNS TINYINT UNSIGNED
+BEGIN
+    DECLARE v_row TINYINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*)
+    FROM
+        models
+    WHERE
+        company_id = p_company_id AND
+        id = p_id AND
+        active = 1
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to get a new ID for the 'models' table.                                 *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_model_new_id $$
+
+CREATE FUNCTION fn_model_new_id(p_company_id MEDIUMINT UNSIGNED)
+       RETURNS MEDIUMINT UNSIGNED
+BEGIN
+    DECLARE v_new_id MEDIUMINT UNSIGNED DEFAULT 1;
+
+    loop_label: LOOP
+        IF NOT EXISTS(SELECT * FROM models WHERE company_id = p_company_id AND id = v_new_id) THEN
+            LEAVE loop_label;
+        ELSE
+            SET v_new_id = v_new_id + 1;
+        END IF;
+    END LOOP;
+
+    RETURN v_new_id;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get all rows from the 'models' table.                                *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_get_all $$
+
+CREATE PROCEDURE sp_model_get_all(IN p_company_id MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        a.company_id,
+        a.id,
+        a.name,
+        a.machine_id,
+        b.name AS machine_name,
+        a.brand_id,
+        c.name AS brand_name,
+        CONCAT(b.name, " ", c.name, " ", a.name) AS full_name,
+        a.active,
+        a.created_at,
+        a.updated_at
+    FROM
+        models a
+        INNER JOIN machines b
+            ON a.machine_id = b.id
+        INNER JOIN wo_brands c
+            ON a.brand_id = c.id
+    WHERE
+        a.company_id = p_company_id
+    ORDER BY
+        full_name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get all rows from the 'models' table.                                *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_get_all_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_model_get_all_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                        IN p_limit MEDIUMINT UNSIGNED,
+                                                        IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        a.company_id,
+        a.id,
+        a.name,
+        a.machine_id,
+        b.name AS machine_name,
+        a.brand_id,
+        c.name AS brand_name,
+        CONCAT(b.name, " ", c.name, " ", a.name) AS full_name,
+        a.active,
+        a.created_at,
+        a.updated_at
+    FROM
+        models a
+        INNER JOIN machines b
+            ON a.machine_id = b.id
+        INNER JOIN wo_brands c
+            ON a.brand_id = c.id
+    WHERE
+        a.company_id = p_company_id
+    ORDER BY
+        full_name
+    LIMIT
+        p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get all active rows from the 'models' table.                         *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_get_all_active $$
+
+CREATE PROCEDURE sp_model_get_all_active(IN p_company_id MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        a.company_id,
+        a.id,
+        a.name,
+        a.machine_id,
+        b.name AS machine_name,
+        a.brand_id,
+        c.name AS brand_name,
+        CONCAT(b.name, " ", c.name, " ", a.name) AS full_name,
+        a.active,
+        a.created_at,
+        a.updated_at
+    FROM
+        models a
+        INNER JOIN machines b
+            ON a.machine_id = b.id
+        INNER JOIN wo_brands c
+            ON a.brand_id = c.id
+    WHERE
+        a.company_id = p_company_id AND
+        a.active = 1
+    ORDER BY
+        full_name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by ID from the 'models' table.                              *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_get_by_id $$
+
+CREATE PROCEDURE sp_model_get_by_id(IN p_company_id MEDIUMINT UNSIGNED,
+                                    IN p_id MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        a.company_id,
+        a.id,
+        a.name,
+        a.machine_id,
+        b.name AS machine_name,
+        a.brand_id,
+        c.name AS brand_name,
+        CONCAT(b.name, " ", c.name, " ", a.name) AS full_name,
+        a.active,
+        a.created_at,
+        a.updated_at
+    FROM
+        models a
+        INNER JOIN machines b
+            ON a.machine_id = b.id
+        INNER JOIN wo_brands c
+            ON a.brand_id = c.id
+    WHERE
+        a.company_id = p_company_id AND
+        a.id = p_id
+    ORDER BY
+        full_name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by name from the 'models' table.                            *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_get_by_name $$
+
+CREATE PROCEDURE sp_model_get_by_name(IN p_company_id MEDIUMINT UNSIGNED,
+                                      IN p_name VARCHAR(50),
+                                      IN p_machine_id MEDIUMINT UNSIGNED,
+                                      IN p_brand_id MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        a.company_id,
+        a.id,
+        a.name,
+        a.machine_id,
+        b.name AS machine_name,
+        a.brand_id,
+        c.name AS brand_name,
+        CONCAT(b.name, " ", c.name, " ", a.name) AS full_name,
+        a.active,
+        a.created_at,
+        a.updated_at
+    FROM
+        models a
+        INNER JOIN machines b
+            ON a.machine_id = b.id
+        INNER JOIN wo_brands c
+            ON a.brand_id = c.id
+    WHERE
+        a.company_id = p_company_id AND
+        a.name LIKE p_name AND
+        a.machine_id = p_machine_id AND
+        a.brand_id = p_brand_id
+    ORDER BY
+        full_name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'models' table.                       *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_get_by_any $$
+
+CREATE PROCEDURE sp_model_get_by_any(IN p_company_id MEDIUMINT UNSIGNED,
+                                     IN p_any VARCHAR(50))
+BEGIN
+    SELECT
+        a.company_id,
+        a.id,
+        a.name,
+        a.machine_id,
+        b.name AS machine_name,
+        a.brand_id,
+        c.name AS brand_name,
+        CONCAT(b.name, " ", c.name, " ", a.name) AS full_name,
+        a.active,
+        a.created_at,
+        a.updated_at
+    FROM
+        models a
+        INNER JOIN machines b
+            ON a.machine_id = b.id
+        INNER JOIN wo_brands c
+            ON a.brand_id = c.id
+    WHERE
+        a.company_id = p_company_id AND
+        (a.id LIKE p_any OR
+        CONCAT(b.name, " ", c.name, " ", a.name) LIKE p_any)
+    ORDER BY
+        full_name;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to get rows by any field from the 'models' table.                       *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_get_by_any_with_limit_and_offset $$
+
+CREATE PROCEDURE sp_model_get_by_any_with_limit_and_offset(IN p_company_id MEDIUMINT UNSIGNED,
+                                                           IN p_any VARCHAR(50),
+                                                           IN p_limit MEDIUMINT UNSIGNED,
+                                                           IN p_offset MEDIUMINT UNSIGNED)
+BEGIN
+    SELECT
+        a.company_id,
+        a.id,
+        a.name,
+        a.machine_id,
+        b.name AS machine_name,
+        a.brand_id,
+        c.name AS brand_name,
+        CONCAT(b.name, " ", c.name, " ", a.name) AS full_name,
+        a.active,
+        a.created_at,
+        a.updated_at
+    FROM
+        models a
+        INNER JOIN machines b
+            ON a.machine_id = b.id
+        INNER JOIN wo_brands c
+            ON a.brand_id = c.id
+    WHERE
+        a.company_id = p_company_id AND
+        (a.id LIKE p_any OR
+        CONCAT(b.name, " ", c.name, " ", a.name) LIKE p_any)
+    ORDER BY
+        full_name
+    LIMIT
+        p_limit OFFSET p_offset;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * FN to get the number of rows in 'models' table.                            *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP FUNCTION IF EXISTS fn_model_get_by_any_reccount $$
+
+CREATE FUNCTION fn_model_get_by_any_reccount(p_company_id MEDIUMINT UNSIGNED,
+                                             p_any VARCHAR(50))
+       RETURNS SMALLINT UNSIGNED
+BEGIN
+    DECLARE v_row SMALLINT UNSIGNED DEFAULT 0;
+
+    SELECT
+        COUNT(*) AS total
+    FROM
+        models a
+        INNER JOIN machines b
+            ON a.machine_id = b.id
+        INNER JOIN wo_brands c
+            ON a.brand_id = c.id
+    WHERE
+        a.company_id = p_company_id AND
+        (a.id LIKE p_any OR
+        CONCAT(b.name, " ", c.name, " ", a.name) LIKE p_any)
+    INTO
+        v_row;
+
+    RETURN v_row;
+END $$
+
+/* -------------------------------------------------------------------------- *
+ * SP to insert rows into the 'models' table.                                 *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_insert $$
+
+CREATE PROCEDURE sp_model_insert(IN p_user_id MEDIUMINT UNSIGNED,
+                                 IN p_company_id MEDIUMINT UNSIGNED,
+                                 IN p_id MEDIUMINT UNSIGNED,
+                                 IN p_name VARCHAR(50),
+                                 IN p_machine_id MEDIUMINT UNSIGNED,
+                                 IN p_brand_id MEDIUMINT UNSIGNED,
+                                 IN p_active TINYINT UNSIGNED)
+BEGIN
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'model', 'create');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SELECT fn_model_new_id(p_company_id) INTO p_id;
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF (SELECT fn_model_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Ya existe.│';
+    END IF;
+    -- end { validate: id }
+
+    -- begin { validate: name }
+    IF p_name IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: No puede ser nulo.│';
+    END IF;
+
+    IF p_name = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: No puede quedar en blanco.│';
+    END IF;
+
+    IF LENGTH(p_name) > 50 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: La longitud debe ser como máximo de 50 caracteres.│';
+    END IF;
+    -- end { validate: name }
+
+    -- begin { validate: machine_id }
+    IF p_machine_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: No puede ser nulo.│';
+    END IF;
+
+    IF p_machine_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_machine_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_machine_id_exists(p_company_id, p_machine_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: No existe.│';
+    END IF;
+
+    IF NOT (SELECT fn_machine_is_active(p_company_id, p_machine_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: No vigente.│';
+    END IF;
+    -- end { validate: machine_id }
+
+    -- begin { validate: brand_id }
+    IF p_brand_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: No puede ser nulo.│';
+    END IF;
+
+    IF p_brand_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_brand_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_wo_brand_id_exists(p_company_id, p_brand_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: No existe.│';
+    END IF;
+
+    IF NOT (SELECT fn_wo_brand_is_active(p_company_id, p_brand_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: No vigente.│';
+    END IF;
+    -- end { validate: brand_id }
+
+    -- begin { validate: active }
+    IF p_active IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: No puede ser nulo.│';
+    END IF;
+
+    IF p_active NOT IN (0, 1) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: Debe ser 0 ó 1.│';
+    END IF;
+    -- end { validate: active }
+
+    -- begin { validate: name }
+    IF (SELECT fn_model_name_exists(p_company_id, p_name, p_machine_id, p_brand_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: Ya existe.│';
+    END IF;
+    -- end { validate: name }
+
+    INSERT INTO models (company_id, id, name, machine_id, brand_id, active)
+        VALUES (p_company_id, p_id, p_name, p_machine_id, p_brand_id, p_active);
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to update rows from the 'models' table.                                 *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_update $$
+
+CREATE PROCEDURE sp_model_update(IN p_user_id MEDIUMINT UNSIGNED,
+                                 IN p_company_id MEDIUMINT UNSIGNED,
+                                 IN p_id MEDIUMINT UNSIGNED,
+                                 IN p_name VARCHAR(50),
+                                 IN p_machine_id MEDIUMINT UNSIGNED,
+                                 IN p_brand_id MEDIUMINT UNSIGNED,
+                                 IN p_active TINYINT UNSIGNED)
+BEGIN
+    DECLARE v_name VARCHAR(50);
+    DECLARE v_machine_id MEDIUMINT UNSIGNED;
+    DECLARE v_brand_id MEDIUMINT UNSIGNED;
+    DECLARE v_active TINYINT UNSIGNED;
+
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'model', 'write');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_model_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No existe.│';
+    END IF;
+    -- end { validate: id }
+
+    -- begin { validate: name }
+    IF p_name IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: No puede ser nulo.│';
+    END IF;
+
+    IF p_name = '' THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: No puede quedar en blanco.│';
+    END IF;
+
+    IF LENGTH(p_name) > 50 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: La longitud debe ser como máximo de 50 caracteres.│';
+    END IF;
+    -- end { validate: name }
+
+    -- begin { validate: machine_id }
+    IF p_machine_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: No puede ser nulo.│';
+    END IF;
+
+    IF p_machine_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_machine_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_machine_id_exists(p_company_id, p_machine_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: No existe.│';
+    END IF;
+
+    IF NOT (SELECT fn_machine_is_active(p_company_id, p_machine_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Máquina: No vigente.│';
+    END IF;
+    -- end { validate: machine_id }
+
+    -- begin { validate: brand_id }
+    IF p_brand_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: No puede ser nulo.│';
+    END IF;
+
+    IF p_brand_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_brand_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_wo_brand_id_exists(p_company_id, p_brand_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: No existe.│';
+    END IF;
+
+    IF NOT (SELECT fn_wo_brand_is_active(p_company_id, p_brand_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Marca: No vigente.│';
+    END IF;
+    -- end { validate: brand_id }
+
+    -- begin { validate: active }
+    IF p_active IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: No puede ser nulo.│';
+    END IF;
+
+    IF p_active NOT IN (0, 1) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Vigente: Debe ser 0 ó 1.│';
+    END IF;
+    -- end { validate: active }
+
+    -- begin { validate: name }
+    IF EXISTS(SELECT * FROM models WHERE company_id = p_company_id AND id <> p_id AND UPPER(name) LIKE UPPER(p_name) AND machine_id = p_machine_id AND brand_id = p_brand_id) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Nombre: Ya existe.│';
+    END IF;
+    -- end { validate: name }
+
+    SELECT
+        name,
+        machine_id,
+        brand_id,
+        active
+    FROM
+        models
+    WHERE
+        company_id = p_company_id AND
+        id = p_id
+    INTO
+        v_name,
+        v_machine_id,
+        v_brand_id,
+        v_active;
+
+    IF v_name <> p_name OR
+       v_machine_id <> p_machine_id OR
+       v_brand_id <> p_brand_id OR
+       v_active <> p_active THEN
+
+        UPDATE
+            models
+        SET
+            name = p_name,
+            machine_id = p_machine_id,
+            brand_id = p_brand_id,
+            active = p_active,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE
+            company_id = p_company_id AND
+            id = p_id;
+    END IF;
+END $$
+
+DELIMITER ;
+
+/* -------------------------------------------------------------------------- *
+ * SP to delete rows into the 'models' table.                                 *
+ * -------------------------------------------------------------------------- */
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS sp_model_delete $$
+
+CREATE PROCEDURE sp_model_delete(IN p_user_id MEDIUMINT UNSIGNED,
+                                 IN p_company_id MEDIUMINT UNSIGNED,
+                                 IN p_id MEDIUMINT UNSIGNED)
+BEGIN
+    CALL sp_user_has_privilege(p_user_id, p_company_id, 'model', 'delete');
+
+    -- begin { validate: id }
+    IF p_id IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No puede ser nulo.│';
+    END IF;
+
+    IF p_id <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser mayor que cero.│';
+    END IF;
+
+    IF p_id > 16777215 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: Debe ser menor a 16777215.│';
+    END IF;
+
+    IF NOT (SELECT fn_model_id_exists(p_company_id, p_id)) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '│Código: No existe.│';
+    END IF;
+    -- end { validate: id }
+
+    DELETE FROM models WHERE company_id = p_company_id AND id = p_id;
+END $$
+
+DELIMITER ;
+
+--
+-- END: MODELS
+--
+
+
+
+
+
+
+
+
+
 
 --
 -- BEGIN: SUPPLIERS

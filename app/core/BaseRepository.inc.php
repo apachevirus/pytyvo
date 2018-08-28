@@ -57,32 +57,96 @@ abstract class BaseRepository {
         return $id_exists;
     }
 
-    public static function name_exists($connection, $company_id, $name) {
-        $name_exists = true;
+    public static function __callStatic($method, $arguments) {
+        if ($method == 'name_exists') {
+            if (count($arguments) == 3) {
+                $connection = $arguments[0];
+                $company_id = $arguments[1];
+                $name = $arguments[2];
 
-        if (isset($connection)) {
-            try {
-                $sql = 'SELECT fn_' . static::$table . '_name_exists(:company_id, :name) name_exists';
+                $name_exists = true;
 
-                $stmt = $connection->prepare($sql);
+                if (isset($connection)) {
+                    try {
+                        $sql = 'SELECT fn_' . static::$table . '_name_exists(:company_id, :name) name_exists';
 
-                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
-                $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+                        $stmt = $connection->prepare($sql);
 
-                $stmt->execute();
+                        $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+                        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
 
-                $result = $stmt->fetch();
+                        $stmt->execute();
 
-                if (!$result['name_exists']) {
-                    $name_exists = false;
+                        $result = $stmt->fetch();
+
+                        if (!$result['name_exists']) {
+                            $name_exists = false;
+                        }
+                    } catch (PDOException $ex) {
+                        print 'ERROR: ' . $ex->getMessage() . '<br>';
+                    }
                 }
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
-        }
 
-        return $name_exists;
+                return $name_exists;
+            }
+        }   //  { method: name_exists() }
+
+        if ($method == 'get_by_name') {
+            if (count($arguments) == 3) {
+                $connection = $arguments[0];
+                $company_id = $arguments[1];
+                $name = $arguments[2];
+
+                $results = array();
+
+                if (isset($connection)) {
+                    try {
+                        $sql = 'CALL sp_' . static::$table . '_get_by_name(:company_id, :name)';
+
+                        $stmt = $connection->prepare($sql);
+
+                        $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+                        $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+
+                        $stmt->execute();
+
+                        $results = $stmt->fetchAll();
+                    } catch (PDOException $ex) {
+                        print 'ERROR: ' . $ex->getMessage() . '<br>';
+                    }
+                }
+
+                return $results;
+            }
+        }   //  { method: get_by_name() }
     }
+
+    // public static function name_exists($connection, $company_id, $name) {
+    //     $name_exists = true;
+
+    //     if (isset($connection)) {
+    //         try {
+    //             $sql = 'SELECT fn_' . static::$table . '_name_exists(:company_id, :name) name_exists';
+
+    //             $stmt = $connection->prepare($sql);
+
+    //             $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+    //             $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+
+    //             $stmt->execute();
+
+    //             $result = $stmt->fetch();
+
+    //             if (!$result['name_exists']) {
+    //                 $name_exists = false;
+    //             }
+    //         } catch (PDOException $ex) {
+    //             print 'ERROR: ' . $ex->getMessage() . '<br>';
+    //         }
+    //     }
+
+    //     return $name_exists;
+    // }
 
     public static function is_active($connection, $company_id, $id) {
         $is_active = false;
@@ -220,28 +284,28 @@ abstract class BaseRepository {
         return $result;
     }
 
-    public static function get_by_name($connection, $company_id, $name) {
-        $results = array();
+    // public static function get_by_name($connection, $company_id, $name) {
+    //     $results = array();
 
-        if (isset($connection)) {
-            try {
-                $sql = 'CALL sp_' . static::$table . '_get_by_name(:company_id, :name)';
+    //     if (isset($connection)) {
+    //         try {
+    //             $sql = 'CALL sp_' . static::$table . '_get_by_name(:company_id, :name)';
 
-                $stmt = $connection->prepare($sql);
+    //             $stmt = $connection->prepare($sql);
 
-                $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
-                $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+    //             $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
+    //             $stmt->bindParam(':name', $name, PDO::PARAM_STR);
 
-                $stmt->execute();
+    //             $stmt->execute();
 
-                $results = $stmt->fetchAll();
-            } catch (PDOException $ex) {
-                print 'ERROR: ' . $ex->getMessage() . '<br>';
-            }
-        }
+    //             $results = $stmt->fetchAll();
+    //         } catch (PDOException $ex) {
+    //             print 'ERROR: ' . $ex->getMessage() . '<br>';
+    //         }
+    //     }
 
-        return $results;
-    }
+    //     return $results;
+    // }
 
     public static function get_by_any($connection, $company_id, $any) {
         $results = array();

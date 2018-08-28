@@ -60,49 +60,98 @@ abstract class BaseValidator {
         }
 
         if ($id < 0) {
-            return 'El c&#243;digo ser mayor que cero.';
+            return 'El c&#243;digo debe ser mayor que cero.';
         }
 
         if ($id > 16777215) {
-            return 'El c&#243;digo ser menor a 16777215.';
+            return 'El c&#243;digo debe ser menor a 16777215.';
         }
 
         return '';
     }
 
-    protected function validate_name($connection, $company_id, $name) {
-        if (!$this->variable_initiated($name)) {
-            return 'Por favor, escribe un nombre.';
-        } else {
-            $this->name = Utils::alltrim(Utils::upper($name));
-        }
+    public function __call($method, $arguments) {
+        if ($method == 'validate_name') {
+            if (count($arguments) == 3 || count($arguments) == 4) {
+                $connection = $arguments[0];
+                $company_id = $arguments[1];
+                $name = $arguments[2];
+                $options = count($arguments) == 3 ? array('min' => 6, 'max' => 50) : $arguments[3];
 
-        if (strlen($this->name) < 6) {
-            return 'El nombre es demasiado corto.';
-        }
+                $min = isset($options['min']) ? $options['min'] : 6;
+                $max = isset($options['max']) ? $options['max'] : 50;
 
-        if (strlen($this->name) > 50) {
-            return 'El nombre es demasiado largo.';
-        }
+                if (!$this->variable_initiated($name)) {
+                    return 'Por favor, escribe un nombre.';
+                } else {
+                    $this->name = Utils::alltrim(Utils::upper($name));
+                }
 
-        if (is_int($this->id) && empty($this->id)) {
-            if ($this->repository::name_exists($connection, $company_id, $this->name)) {
-                return 'Este nombre ya est&#225; en uso. Elige otro.';
-            }
-        } elseif (is_int($this->id) && !empty($this->id)) {
-            $results = $this->repository::get_by_name($connection, $company_id, $this->name);
+                if (strlen($this->name) < $min) {
+                    return 'El nombre es demasiado corto.';
+                }
 
-            if (count($results)) {
-                foreach ($results as $row) {
-                    if ((int) $row->get_id() !== $this->id) {
+                if (strlen($this->name) > $max) {
+                    return 'El nombre es demasiado largo.';
+                }
+
+                if (is_int($this->id) && empty($this->id)) {
+                    if ($this->repository::name_exists($connection, $company_id, $this->name)) {
                         return 'Este nombre ya est&#225; en uso. Elige otro.';
                     }
+                } elseif (is_int($this->id) && !empty($this->id)) {
+                    $results = $this->repository::get_by_name($connection, $company_id, $this->name);
+
+                    if (count($results)) {
+                        foreach ($results as $row) {
+                            if ((int) $row->get_id() !== $this->id) {
+                                return 'Este nombre ya est&#225; en uso. Elige otro.';
+                            }
+                        }
+                    }
                 }
+
+                return '';
             }
         }
-
-        return '';
     }
+
+    // protected function validate_name($connection, $company_id, $name, $options = array('min' => 6, 'max' => 50)) {
+    //     $min = isset($options['min']) ? $options['min'] : 6;
+    //     $max = isset($options['max']) ? $options['max'] : 50;
+
+    //     if (!$this->variable_initiated($name)) {
+    //         return 'Por favor, escribe un nombre.';
+    //     } else {
+    //         $this->name = Utils::alltrim(Utils::upper($name));
+    //     }
+
+    //     if (strlen($this->name) < $min) {
+    //         return 'El nombre es demasiado corto.';
+    //     }
+
+    //     if (strlen($this->name) > $max) {
+    //         return 'El nombre es demasiado largo.';
+    //     }
+
+    //     if (is_int($this->id) && empty($this->id)) {
+    //         if ($this->repository::name_exists($connection, $company_id, $this->name)) {
+    //             return 'Este nombre ya est&#225; en uso. Elige otro.';
+    //         }
+    //     } elseif (is_int($this->id) && !empty($this->id)) {
+    //         $results = $this->repository::get_by_name($connection, $company_id, $this->name);
+
+    //         if (count($results)) {
+    //             foreach ($results as $row) {
+    //                 if ((int) $row->get_id() !== $this->id) {
+    //                     return 'Este nombre ya est&#225; en uso. Elige otro.';
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return '';
+    // }
 
     protected function validate_active($active) {
         if (!isset($active) || !is_bool($active)) {
