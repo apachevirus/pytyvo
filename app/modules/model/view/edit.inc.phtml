@@ -1,8 +1,4 @@
-<div class="d-none">
-    <input type="hidden" name="id" value="<?php echo $model->get_id(); ?>">
-    <input type="hidden" name="curr_machine_id" value="<?php echo $model->get_machine_id(); ?>">
-    <input type="hidden" name="curr_brand_id" value="<?php echo $model->get_brand_id(); ?>">
-</div>
+<input type="hidden" name="id" value="<?php echo $model->get_id(); ?>">
 
 <div class="form-group">
     <label for="selectMachine">M&#225;quina<span class="align-middle" style="color: red; font-size: 0.5rem;"><i class="fas fa-asterisk"></i></span></label>
@@ -11,7 +7,7 @@
         <?php
         foreach ($machines as $machine) {
             ?>
-            <option value="<?php echo $machine->get_id(); ?>"<?php if ($machine->get_id() === $model->get_machine_id()) echo ' selected';?>><?php echo $machine->get_name(); ?></option>
+            <option value="<?php echo $machine->get_id(); ?>"<?php if ($machine->get_id() == $model->get_machine_id()) echo ' selected';?>><?php echo $machine->get_name(); ?></option>
             <?php
         }
         ?>
@@ -25,7 +21,7 @@
         <?php
         foreach ($wo_brands as $wo_brand) {
             ?>
-            <option value="<?php echo $wo_brand->get_id(); ?>"<?php if ($wo_brand->get_id() === $model->get_brand_id()) echo ' selected';?>><?php echo $wo_brand->get_name(); ?></option>
+            <option value="<?php echo $wo_brand->get_id(); ?>"<?php if ($wo_brand->get_id() == $model->get_brand_id()) echo ' selected';?>><?php echo $wo_brand->get_name(); ?></option>
             <?php
         }
         ?>

@@ -35,7 +35,7 @@ function loadMachineMenuOptions() {
 
     $.getJSON(url)
     .done(function(data) {
-        $('#selectMachine').empty().append('<option value="0"></option>');
+        $('#selectMachine').empty().append('<option value="0">Selecciona una m&#225;quina</option>');
         $.each(data.results, function(i, result) {
             $('#selectMachine').append('<option value="' + result.id + '">' + result.name + '</option>');
         })
@@ -50,7 +50,7 @@ function loadWOBrandMenuOptions() {
 
     $.getJSON(url)
     .done(function(data) {
-        $('#selectWOBrand').empty().append('<option value="0"></option>');
+        $('#selectWOBrand').empty().append('<option value="0">Selecciona una marca</option>');
         $.each(data.results, function(i, result) {
             $('#selectWOBrand').append('<option value="' + result.id + '">' + result.name + '</option>');
         })

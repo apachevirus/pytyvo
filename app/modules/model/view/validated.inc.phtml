@@ -18,7 +18,7 @@ if (!empty($validator->show_error_company_id()) || !empty($validator->show_error
         <?php
         foreach ($machines as $machine) {
             ?>
-            <option value="<?php echo $machine->get_id(); ?>"<?php if ((int) $machine->get_id() === $validator->get_machine_id()) echo ' selected';?>><?php echo $machine->get_name(); ?></option>
+            <option value="<?php echo $machine->get_id(); ?>"<?php if ($machine->get_id() == $validator->get_machine_id()) echo ' selected';?>><?php echo $machine->get_name(); ?></option>
             <?php
         }
         ?>
@@ -33,7 +33,7 @@ if (!empty($validator->show_error_company_id()) || !empty($validator->show_error
         <?php
         foreach ($wo_brands as $wo_brand) {
             ?>
-            <option value="<?php echo $wo_brand->get_id(); ?>"<?php if ((int) $wo_brand->get_id() === $validator->get_brand_id()) echo ' selected';?>><?php echo $wo_brand->get_name(); ?></option>
+            <option value="<?php echo $wo_brand->get_id(); ?>"<?php if ($wo_brand->get_id() == $validator->get_brand_id()) echo ' selected';?>><?php echo $wo_brand->get_name(); ?></option>
             <?php
         }
         ?>

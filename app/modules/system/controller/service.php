@@ -16,7 +16,7 @@ include_once 'template/navbar.inc.phtml';
         <li class="breadcrumb-item"><a href="<?php echo SERVER; ?>">Inicio</a></li>
         <li class="breadcrumb-item"><a href="<?php echo ROUTE_ADMINISTRATION; ?>">Gesti&#243;n</a></li>
         <li class="breadcrumb-item"><a href="<?php echo ROUTE_ADMINISTRATION_SETUP; ?>">Definiciones</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Servicio</li>
+        <li class="breadcrumb-item active" aria-current="page">Servicio t&#233;cnico</li>
     </ol>
 </nav>
 
@@ -34,6 +34,10 @@ include_once 'template/navbar.inc.phtml';
             <a class="quick-btn" href="<?php echo ROUTE_ADMINISTRATION_SETUP_SERVICE_MODEL_MANAGER; ?>">
                 <i class="far fa-window-maximize" style="font-size: 1.5rem;"></i>
                 <span>Modelos</span>
+            </a>
+            <a class="quick-btn" href="<?php echo ROUTE_ADMINISTRATION_SETUP_SERVICE_WO_STATUS_MANAGER; ?>">
+                <i class="far fa-window-maximize" style="font-size: 1.5rem;"></i>
+                <span>Estados de OT</span>
             </a>
         </div>
     </div>

@@ -399,6 +399,32 @@ ALTER TABLE models
         CHECK (active IN (0, 1));
 
 /* -------------------------------------------------------------------------- */
+CREATE TABLE wo_statuses (
+    company_id MEDIUMINT UNSIGNED NOT NULL,
+    id MEDIUMINT UNSIGNED NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    active TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NULL DEFAULT NULL
+) ENGINE=InnoDB;
+
+ALTER TABLE wo_statuses
+    ADD CONSTRAINT pk_wo_statuses_id
+        PRIMARY KEY (company_id, id),
+    ADD CONSTRAINT fk_wo_statuses_company_id
+        FOREIGN KEY (company_id) REFERENCES companies (id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    ADD CONSTRAINT uk_wo_statuses_name
+        UNIQUE KEY (company_id, name),
+    ADD CONSTRAINT chk_wo_statuses_id
+        CHECK (id > 0),
+    ADD CONSTRAINT chk_wo_statuses_name
+        CHECK (name <> ''),
+    ADD CONSTRAINT chk_wo_statuses_active
+        CHECK (active IN (0, 1));
+
+/* -------------------------------------------------------------------------- */
 CREATE TABLE suppliers (
     company_id MEDIUMINT UNSIGNED NOT NULL,
     id MEDIUMINT UNSIGNED NOT NULL,

@@ -1,5 +1,4 @@
 <?php
-/* -------------------------------------------------------------------------- */
 function variable_initiated($variable) {
     if (isset($variable) && !empty($variable)) {
         return true;
@@ -8,7 +7,6 @@ function variable_initiated($variable) {
     }
 }
 
-/* -------------------------------------------------------------------------- */
 function get_request() {
     $request = '';
 
@@ -27,7 +25,6 @@ function get_request() {
     return $request;
 }
 
-/* -------------------------------------------------------------------------- */
 function get_title($request, $repository) {
     $title = '';
 
@@ -53,7 +50,6 @@ function get_title($request, $repository) {
     return $title;
 }
 
-/* -------------------------------------------------------------------------- */
 function get_submit_button_text($request) {
     $text = '';
 
@@ -74,7 +70,6 @@ function get_submit_button_text($request) {
     return $text;
 }
 
-/* -------------------------------------------------------------------------- */
 function get_cancel_button_text($request) {
     $text = '';
 
@@ -89,7 +84,6 @@ function get_cancel_button_text($request) {
     return $text;
 }
 
-/* -------------------------------------------------------------------------- */
 function get_cancel_button_title($request) {
     $text = '';
 
@@ -109,7 +103,6 @@ function get_cancel_button_title($request) {
     return $text;
 }
 
-/* -------------------------------------------------------------------------- */
 function get_submit_button_class($request) {
     $text = '';
 
@@ -130,7 +123,6 @@ function get_submit_button_class($request) {
     return $text;
 }
 
-/* -------------------------------------------------------------------------- */
 function get_submit_button_title($request) {
     $text = '';
 
@@ -151,7 +143,6 @@ function get_submit_button_title($request) {
     return $text;
 }
 
-/* -------------------------------------------------------------------------- */
 function get_pagination($page, $total, $url) {
     $html =  '<nav aria-label="Page navigation"><ul class="pagination justify-content-end">';
 

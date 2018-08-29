@@ -44,7 +44,7 @@ include_once 'template/navbar.inc.phtml';
             </a>
             <a class="quick-btn" href="<?php echo ROUTE_ADMINISTRATION_SETUP_SERVICE; ?>">
                 <i class="fas fa-folder" style="font-size: 1.5rem;"></i>
-                <span>Servicio</span>
+                <span>Servicio t&#233;cnico</span>
             </a>
             <a class="quick-btn" href="#">
                 <i class="fas fa-folder" style="font-size: 1.5rem;"></i>

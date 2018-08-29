@@ -75,7 +75,7 @@ class SignupValidator {
         }
 
         if (UserRepository::email_exists($connection, $email)) {
-            return 'Este email ya est&#225; en uso. Elige otro o <a href="#"> o intenta recuperar tu contrase&#241;a</a>.';
+            return 'Este email ya est&#225; en uso. Elige otro o <a href="#">intenta recuperar tu contrase&#241;a</a>.';
         }
 
         return '';
