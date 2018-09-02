@@ -1,0 +1,70 @@
+<!-- begin { breadcrumb } -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="<?php echo SERVER; ?>">Inicio</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo ROUTE_ADMINISTRATION; ?>">Gesti&#243;n</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo ROUTE_ADMINISTRATION_SETUP; ?>">Definiciones</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo ROUTE_ADMINISTRATION_SETUP_GENERAL; ?>">General</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo ROUTE_MANAGER; ?>">Ciudades</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><?php echo $title; ?></li>
+    </ol>
+</nav>
+<!-- end { breadcrumb } -->
+
+<div class="container">
+    <div class="row pl-5 pr-5">
+        <div class="col-md-3">
+        </div>
+        <div class="col-md-6 card mb-3 p-0">
+            <div class="card-header">
+                <h4><b><?php echo $title; ?></b></h4>
+            </div>
+            <div class="card-body">
+                <!-- begin { sql exception } -->
+                <?php
+                if (isset($_POST['request']) && isset($response)) {
+                    $sql_exception = $entity_repository::get_sql_exception();
+
+                    if (isset($sql_exception)) {
+                        ?>
+                        <div class="alert alert-info" role="alert">
+                            <?php echo $sql_exception; ?>
+                        </div>
+                        <?php
+                    }
+                }
+                ?>
+                <!-- end { sql exception } -->
+                <form class="form" role="form" autocomplete="off" method="post" enctype="application/x-www-form-urlencoded" action="<?php echo ROUTE_MAINTAIN; ?>">
+                    <input type="hidden" name="authenticity_token" value="<?php echo $_SESSION['token']; ?>">
+                    <input type="hidden" name="requested_action" value="<?php echo $request; ?>">
+                    <?php include_once 'content.inc.phtml'; ?>
+                    <div class="float-right">
+                        <?php
+                        if ($request !== 'view') {
+                            ?>
+                            <button
+                                type="submit"
+                                class="<?php echo get_submit_button_class($request); ?>"
+                                name="request"
+                                title="<?php echo get_submit_button_title($request); ?>">
+                                <?php echo get_submit_button_text($request); ?>
+                            </button>
+                            <?php
+                        }
+                        ?>
+                        <a
+                            href="<?php echo ROUTE_MANAGER; ?>"
+                            class="btn btn-outline-secondary btn-md"
+                            role="button"
+                            title="<?php echo get_cancel_button_title($request); ?>">
+                            <?php echo get_cancel_button_text($request); ?>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-3">
+        </div>
+    </div>
+</div>

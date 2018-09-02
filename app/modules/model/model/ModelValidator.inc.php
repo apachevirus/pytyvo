@@ -84,7 +84,10 @@ class ModelValidator extends BaseValidator {
                 $name = $arguments[2];
                 $machine_id = $arguments[3];
                 $brand_id = $arguments[4];
-                $options = count($arguments) == 5 ? array('min' => 2) : $arguments[5];
+                $options = count($arguments) == 5 ? null : $arguments[5];
+
+                $min = isset($options['min']) ? $options['min'] : 2;
+                $max = isset($options['max']) ? $options['max'] : 50;
 
                 if (!$this->variable_initiated($name)) {
                     return 'Por favor, escribe un nombre.';
@@ -92,11 +95,11 @@ class ModelValidator extends BaseValidator {
                     $this->name = Utils::alltrim(Utils::upper($name));
                 }
 
-                if (strlen($this->name) < 2) {
+                if (strlen($this->name) < $min) {
                     return 'El nombre es demasiado corto.';
                 }
 
-                if (strlen($this->name) > 50) {
+                if (strlen($this->name) > $max) {
                     return 'El nombre es demasiado largo.';
                 }
 

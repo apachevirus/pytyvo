@@ -76,7 +76,7 @@ abstract class BaseValidator {
                 $connection = $arguments[0];
                 $company_id = $arguments[1];
                 $name = $arguments[2];
-                $options = count($arguments) == 3 ? array('min' => 6, 'max' => 50) : $arguments[3];
+                $options = count($arguments) == 3 ? null : $arguments[3];
 
                 $min = isset($options['min']) ? $options['min'] : 6;
                 $max = isset($options['max']) ? $options['max'] : 50;
