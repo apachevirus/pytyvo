@@ -52,5 +52,13 @@ class Utils {
         return $string;
     }
 
+    public static function variable_initiated($variable) {
+        if (isset($variable) && !empty($variable)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
 ?>

@@ -360,11 +360,53 @@ ALTER TABLE cities
             ON UPDATE RESTRICT,
     ADD CONSTRAINT uk_cities_name
         UNIQUE KEY (company_id, name, depar_id),
+    ADD CONSTRAINT uk_cities_depar_id_id
+        UNIQUE KEY (company_id, depar_id, id),
     ADD CONSTRAINT chk_cities_id
         CHECK (id > 0),
     ADD CONSTRAINT chk_cities_name
         CHECK (name <> ''),
     ADD CONSTRAINT chk_cities_active
+        CHECK (active IN (0, 1));
+
+/* -------------------------------------------------------------------------- */
+CREATE TABLE neighborhoods (
+    company_id MEDIUMINT UNSIGNED NOT NULL,
+    id MEDIUMINT UNSIGNED NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    depar_id MEDIUMINT UNSIGNED NOT NULL,
+    city_id MEDIUMINT UNSIGNED NOT NULL,
+    active TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NULL DEFAULT NULL
+) ENGINE=InnoDB;
+
+ALTER TABLE neighborhoods
+    ADD CONSTRAINT pk_neighborhoods_id
+        PRIMARY KEY (company_id, id),
+    ADD CONSTRAINT fk_neighborhoods_company_id
+        FOREIGN KEY (company_id) REFERENCES companies (id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    ADD CONSTRAINT fk_neighborhoods_depar_id
+        FOREIGN KEY (company_id, depar_id) REFERENCES depars (company_id, id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    ADD CONSTRAINT fk_neighborhoods_city_id
+        FOREIGN KEY (company_id, city_id) REFERENCES cities (company_id, id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    ADD CONSTRAINT fk_neighborhoods_depar_id_city_id
+        FOREIGN KEY (company_id, depar_id, city_id) REFERENCES cities (company_id, depar_id, id)
+            ON DELETE RESTRICT
+            ON UPDATE RESTRICT,
+    ADD CONSTRAINT uk_neighborhoods_name
+        UNIQUE KEY (company_id, name, depar_id, city_id),
+    ADD CONSTRAINT chk_neighborhoods_id
+        CHECK (id > 0),
+    ADD CONSTRAINT chk_neighborhoods_name
+        CHECK (name <> ''),
+    ADD CONSTRAINT chk_neighborhoods_active
         CHECK (active IN (0, 1));
 
 /* -------------------------------------------------------------------------- */

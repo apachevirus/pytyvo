@@ -131,7 +131,7 @@ class ModelValidator extends BaseValidator {
     //         $this->name = Utils::alltrim(Utils::upper($name));
     //     }
 
-    //     if (strlen($this->name) < 6) {
+    //     if (strlen($this->name) < 2) {
     //         return 'El nombre es demasiado corto.';
     //     }
 

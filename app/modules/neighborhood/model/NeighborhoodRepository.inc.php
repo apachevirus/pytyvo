@@ -1,129 +1,123 @@
 <?php
 include_once 'app/core/BaseRepository.inc.php';
-include_once 'City.inc.php';
+include_once 'Neighborhood.inc.php';
 
-class CityRepository extends BaseRepository {
+class NeighborhoodRepository extends BaseRepository {
 
-    protected static $table = 'city';
+    protected static $table = 'neighborhood';
 
-    public static function get_all($connection, $company_id) {
-        $cities = array();
-
-        $results = parent::get_all($connection, $company_id);
-
-        if (count($results)) {
-            foreach ($results as $row) {
-                $cities[] = new City(
-                    $row['company_id'],
-                    $row['id'],
-                    $row['name'],
-                    $row['depar_id'],
-                    $row['full_name'],
-                    $row['active'],
-                    $row['created_at'],
-                    $row['updated_at']
-                );
-            }
-        }
-
-        return $cities;
-    }
-
-    public static function get_all_with_limit_and_offset($connection, $company_id, $limit, $offset) {
-        $cities = array();
-
-        $results = parent::get_all_with_limit_and_offset($connection, $company_id, $limit, $offset);
-
-        if (count($results)) {
-            foreach ($results as $row) {
-                $cities[] = new City(
-                    $row['company_id'],
-                    $row['id'],
-                    $row['name'],
-                    $row['depar_id'],
-                    $row['full_name'],
-                    $row['active'],
-                    $row['created_at'],
-                    $row['updated_at']
-                );
-            }
-        }
-
-        return $cities;
-    }
-
-    public static function get_all_active($connection, $company_id) {
-        $cities = array();
-
-        $results = parent::get_all_active($connection, $company_id);
-
-        if (count($results)) {
-            foreach ($results as $row) {
-                $cities[] = new City(
-                    $row['company_id'],
-                    $row['id'],
-                    $row['name'],
-                    $row['depar_id'],
-                    $row['full_name'],
-                    $row['active'],
-                    $row['created_at'],
-                    $row['updated_at']
-                );
-            }
-        }
-
-        return $cities;
-    }
-
-    public static function get_all_active_filtered_by_depar($connection, $company_id, $depar_id) {
-        $cities = array();
+    public static function city_belongs_to_depar($connection, $company_id, $depar_id, $city_id) {
+        $belongs = false;
 
         if (isset($connection)) {
             try {
-                $sql = 'CALL sp_' . static::$table . '_get_all_active_filtered_by_depar(:company_id, :depar_id)';
+                $sql = 'SELECT fn_' . static::$table . '_city_belongs_to_depar(:company_id, :depar_id, :city_id) belongs';
 
                 $stmt = $connection->prepare($sql);
 
                 $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->bindParam(':depar_id', $depar_id, PDO::PARAM_INT);
+                $stmt->bindParam(':city_id', $city_id, PDO::PARAM_INT);
 
                 $stmt->execute();
 
-                $results = $stmt->fetchAll();
+                $result = $stmt->fetch();
 
-                if (count($results)) {
-                    foreach ($results as $row) {
-                        $cities[] = new City(
-                            $row['company_id'],
-                            $row['id'],
-                            $row['name'],
-                            $row['depar_id'],
-                            $row['full_name'],
-                            $row['active'],
-                            $row['created_at'],
-                            $row['updated_at']
-                        );
-                    }
+                if ($result['belongs']) {
+                    $belongs = true;
                 }
             } catch (PDOException $ex) {
                 print 'ERROR: ' . $ex->getMessage() . '<br>';
             }
         }
 
-        return $cities;
+        return $belongs;
+    }
+
+    public static function get_all($connection, $company_id) {
+        $neighborhoods = array();
+
+        $results = parent::get_all($connection, $company_id);
+
+        if (count($results)) {
+            foreach ($results as $row) {
+                $neighborhoods[] = new Neighborhood(
+                    $row['company_id'],
+                    $row['id'],
+                    $row['name'],
+                    $row['depar_id'],
+                    $row['city_id'],
+                    $row['full_name'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
+            }
+        }
+
+        return $neighborhoods;
+    }
+
+    public static function get_all_with_limit_and_offset($connection, $company_id, $limit, $offset) {
+        $neighborhoods = array();
+
+        $results = parent::get_all_with_limit_and_offset($connection, $company_id, $limit, $offset);
+
+        if (count($results)) {
+            foreach ($results as $row) {
+                $neighborhoods[] = new Neighborhood(
+                    $row['company_id'],
+                    $row['id'],
+                    $row['name'],
+                    $row['depar_id'],
+                    $row['city_id'],
+                    $row['full_name'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
+            }
+        }
+
+        return $neighborhoods;
+    }
+
+    public static function get_all_active($connection, $company_id) {
+        $neighborhoods = array();
+
+        $results = parent::get_all_active($connection, $company_id);
+
+        if (count($results)) {
+            foreach ($results as $row) {
+                $neighborhoods[] = new Neighborhood(
+                    $row['company_id'],
+                    $row['id'],
+                    $row['name'],
+                    $row['depar_id'],
+                    $row['city_id'],
+                    $row['full_name'],
+                    $row['active'],
+                    $row['created_at'],
+                    $row['updated_at']
+                );
+            }
+        }
+
+        return $neighborhoods;
     }
 
     public static function get_by_id($connection, $company_id, $id) {
-        $city = null;
+        $neighborhood = null;
 
         $result = parent::get_by_id($connection, $company_id, $id);
 
         if (!empty($result)) {
-            $city = new City(
+            $neighborhood = new Neighborhood(
                 $result['company_id'],
                 $result['id'],
                 $result['name'],
                 $result['depar_id'],
+                $result['city_id'],
                 $result['full_name'],
                 $result['active'],
                 $result['created_at'],
@@ -131,28 +125,30 @@ class CityRepository extends BaseRepository {
             );
         }
 
-        return $city;
+        return $neighborhood;
     }
 
     public static function __callStatic($method, $arguments) {
         if ($method == 'name_exists') {
-            if (count($arguments) == 4) {
+            if (count($arguments) == 5) {
                 $connection = $arguments[0];
                 $company_id = $arguments[1];
                 $name = $arguments[2];
                 $depar_id = $arguments[3];
+                $city_id = $arguments[4];
 
                 $name_exists = true;
 
                 if (isset($connection)) {
                     try {
-                        $sql = 'SELECT fn_' . static::$table . '_name_exists(:company_id, :name, :depar_id) name_exists';
+                        $sql = 'SELECT fn_' . static::$table . '_name_exists(:company_id, :name, :depar_id, :city_id) name_exists';
 
                         $stmt = $connection->prepare($sql);
 
                         $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
                         $stmt->bindParam(':depar_id', $depar_id, PDO::PARAM_INT);
+                        $stmt->bindParam(':city_id', $city_id, PDO::PARAM_INT);
 
                         $stmt->execute();
 
@@ -171,23 +167,25 @@ class CityRepository extends BaseRepository {
         }   //  { method: name_exists() }
 
         if ($method == 'get_by_name') {
-            if (count($arguments) == 4) {
+            if (count($arguments) == 5) {
                 $connection = $arguments[0];
                 $company_id = $arguments[1];
                 $name = $arguments[2];
                 $depar_id = $arguments[3];
+                $city_id = $arguments[4];
 
-                $cities = array();
+                $neighborhoods = array();
 
                 if (isset($connection)) {
                     try {
-                        $sql = 'CALL sp_' . static::$table . '_get_by_name(:company_id, :name, :depar_id)';
+                        $sql = 'CALL sp_' . static::$table . '_get_by_name(:company_id, :name, :depar_id, :city_id)';
 
                         $stmt = $connection->prepare($sql);
 
                         $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                         $stmt->bindParam(':name', $name, PDO::PARAM_STR);
                         $stmt->bindParam(':depar_id', $depar_id, PDO::PARAM_INT);
+                        $stmt->bindParam(':city_id', $city_id, PDO::PARAM_INT);
 
                         $stmt->execute();
 
@@ -195,11 +193,12 @@ class CityRepository extends BaseRepository {
 
                         if (count($results)) {
                             foreach ($results as $row) {
-                                $cities[] = new City(
+                                $neighborhoods[] = new Neighborhood(
                                     $row['company_id'],
                                     $row['id'],
                                     $row['name'],
                                     $row['depar_id'],
+                                    $row['city_id'],
                                     $row['full_name'],
                                     $row['active'],
                                     $row['created_at'],
@@ -212,23 +211,24 @@ class CityRepository extends BaseRepository {
                     }
                 }
 
-                return $cities;
+                return $neighborhoods;
             }
         }   //  { method: get_by_name() }
     }
 
-    // public static function get_by_name($connection, $company_id, $name, $depar_id) {
-    //     $cities = array();
+    // public static function get_by_name($connection, $company_id, $name, $depar_id, $city_id) {
+    //     $neighborhoods = array();
 
     //     if (isset($connection)) {
     //         try {
-    //             $sql = 'CALL sp_' . static::$table . '_get_by_name(:company_id, :name, :depar_id)';
+    //             $sql = 'CALL sp_' . static::$table . '_get_by_name(:company_id, :name, :depar_id, :city_id)';
 
     //             $stmt = $connection->prepare($sql);
 
     //             $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
     //             $stmt->bindParam(':name', $name, PDO::PARAM_STR);
     //             $stmt->bindParam(':depar_id', $depar_id, PDO::PARAM_INT);
+    //             $stmt->bindParam(':city_id', $city_id, PDO::PARAM_INT);
 
     //             $stmt->execute();
 
@@ -236,12 +236,12 @@ class CityRepository extends BaseRepository {
 
     //             if (count($results)) {
     //                 foreach ($results as $row) {
-    //                     $cities[] = new City(
+    //                     $neighborhoods[] = new Neighborhood(
     //                         $row['company_id'],
     //                         $row['id'],
     //                         $row['name'],
     //                         $row['depar_id'],
-    //                         $row['full_name'],
+    //                         $row['city_id'],
     //                         $row['active'],
     //                         $row['created_at'],
     //                         $row['updated_at']
@@ -253,21 +253,22 @@ class CityRepository extends BaseRepository {
     //         }
     //     }
 
-    //     return $cities;
+    //     return $neighborhoods;
     // }
 
     public static function get_by_any($connection, $company_id, $any) {
-        $cities = array();
+        $neighborhoods = array();
 
         $results = parent::get_by_any($connection, $company_id, $any);
 
         if (count($results)) {
             foreach ($results as $row) {
-                $cities[] = new City(
+                $neighborhoods[] = new Neighborhood(
                     $row['company_id'],
                     $row['id'],
                     $row['name'],
                     $row['depar_id'],
+                    $row['city_id'],
                     $row['full_name'],
                     $row['active'],
                     $row['created_at'],
@@ -276,21 +277,22 @@ class CityRepository extends BaseRepository {
             }
         }
 
-        return $cities;
+        return $neighborhoods;
     }
 
     public static function get_by_any_with_limit_and_offset($connection, $company_id, $any, $limit, $offset) {
-        $cities = array();
+        $neighborhoods = array();
 
         $results = parent::get_by_any_with_limit_and_offset($connection, $company_id, $any, $limit, $offset);
 
         if (count($results)) {
             foreach ($results as $row) {
-                $cities[] = new City(
+                $neighborhoods[] = new Neighborhood(
                     $row['company_id'],
                     $row['id'],
                     $row['name'],
                     $row['depar_id'],
+                    $row['city_id'],
                     $row['full_name'],
                     $row['active'],
                     $row['created_at'],
@@ -299,20 +301,21 @@ class CityRepository extends BaseRepository {
             }
         }
 
-        return $cities;
+        return $neighborhoods;
     }
 
-    public static function insert($connection, $user_id, $city) {
-        $city_inserted = false;
+    public static function insert($connection, $user_id, $neighborhood) {
+        $neighborhood_inserted = false;
 
         if (isset($connection)) {
             try {
-                $sql = 'CALL sp_' . static::$table . '_insert(:user_id, :company_id, 0, :name, :depar_id, :active)';
+                $sql = 'CALL sp_' . static::$table . '_insert(:user_id, :company_id, 0, :name, :depar_id, :city_id, :active)';
 
-                $company_id = $city->get_company_id();
-                $name = $city->get_name();
-                $depar_id = $city->get_depar_id();
-                $active = $city->is_active();
+                $company_id = $neighborhood->get_company_id();
+                $name = $neighborhood->get_name();
+                $depar_id = $neighborhood->get_depar_id();
+                $city_id = $neighborhood->get_city_id();
+                $active = $neighborhood->is_active();
 
                 $stmt = $connection->prepare($sql);
 
@@ -320,9 +323,10 @@ class CityRepository extends BaseRepository {
                 $stmt->bindParam(':company_id', $company_id, PDO::PARAM_INT);
                 $stmt->bindParam(':name', $name, PDO::PARAM_STR);
                 $stmt->bindParam(':depar_id', $depar_id, PDO::PARAM_INT);
+                $stmt->bindParam(':city_id', $city_id, PDO::PARAM_INT);
                 $stmt->bindParam(':active', $active, PDO::PARAM_BOOL);
 
-                $city_inserted = $stmt->execute();
+                $neighborhood_inserted = $stmt->execute();
             } catch (PDOException $ex) {
                 if ($ex->getCode() == '45000') {
                     $pdo_exception = explode('│', $ex->getMessage());
@@ -334,21 +338,22 @@ class CityRepository extends BaseRepository {
             }
         }
 
-        return $city_inserted;
+        return $neighborhood_inserted;
     }
 
-    public static function update($connection, $user_id, $city) {
-        $city_updated = false;
+    public static function update($connection, $user_id, $neighborhood) {
+        $neighborhood_updated = false;
 
         if (isset($connection)) {
             try {
-                $sql = 'CALL sp_' . static::$table . '_update(:user_id, :company_id, :id, :name, :depar_id, :active)';
+                $sql = 'CALL sp_' . static::$table . '_update(:user_id, :company_id, :id, :name, :depar_id, :city_id, :active)';
 
-                $company_id = $city->get_company_id();
-                $id = $city->get_id();
-                $name = $city->get_name();
-                $depar_id = $city->get_depar_id();
-                $active = $city->is_active();
+                $company_id = $neighborhood->get_company_id();
+                $id = $neighborhood->get_id();
+                $name = $neighborhood->get_name();
+                $depar_id = $neighborhood->get_depar_id();
+                $city_id = $neighborhood->get_city_id();
+                $active = $neighborhood->is_active();
 
                 $stmt = $connection->prepare($sql);
 
@@ -357,9 +362,10 @@ class CityRepository extends BaseRepository {
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
                 $stmt->bindParam(':name', $name, PDO::PARAM_STR);
                 $stmt->bindParam(':depar_id', $depar_id, PDO::PARAM_INT);
+                $stmt->bindParam(':city_id', $city_id, PDO::PARAM_INT);
                 $stmt->bindParam(':active', $active, PDO::PARAM_BOOL);
 
-                $city_updated = $stmt->execute();
+                $neighborhood_updated = $stmt->execute();
             } catch (PDOException $ex) {
                 if ($ex->getCode() == '45000') {
                     $pdo_exception = explode('│', $ex->getMessage());
@@ -371,7 +377,7 @@ class CityRepository extends BaseRepository {
             }
         }
 
-        return $city_updated;
+        return $neighborhood_updated;
     }
 
 }

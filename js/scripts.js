@@ -28,7 +28,28 @@ $(document).ready(function() {
     //     }
     // }
 
+    $('#selectDepar').change(function() {
+        loadCityMenuOptions();
+    });
+
 });
+
+function loadCityMenuOptions() {
+    let url = pytyvoConfig.baseUrl + '/ajax/city-get-all-active-filtered-by-depar';
+    let depar_id = $('#selectDepar').val();
+
+    $.getJSON(url, {'depar_id': depar_id})
+    .done(function(data) {
+        $('#selectCity').empty().append('<option value="0">Selecciona una ciudad</option>');
+        $.each(data.results, function(i, result) {
+            $('#selectCity').append('<option value="' + result.id + '">' + result.name + '</option>');
+        })
+    })
+    .fail(function(jqxhr, textStatus, error) {
+        let err = textStatus + ', ' + error;
+        console.log('Request failed: ' + err);
+    });
+}
 
 function loadMachineMenuOptions() {
     let url = pytyvoConfig.baseUrl + '/ajax/machine-get-all-active';
@@ -41,7 +62,7 @@ function loadMachineMenuOptions() {
         })
     })
     .fail(function() {
-        console.log('Error: ' + url);
+        console.log('Request failed: ' + url);
     });
 }
 
@@ -56,6 +77,6 @@ function loadWOBrandMenuOptions() {
         })
     })
     .fail(function() {
-        console.log('Error: ' + url);
+        console.log('Request failed: ' + url);
     });
 }

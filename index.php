@@ -44,6 +44,9 @@ if ($route_parts[0] == 'pytyvo') {
                 break;
             case 'ajax':
                 switch ($route_parts[2]) {
+                    case 'city-get-all-active-filtered-by-depar':
+                        $chosen_route = 'app/modules/ajax/city_get_all_active_filtered_by_depar.php';
+                        break;
                     case 'machine-get-all-active':
                         $chosen_route = 'app/modules/ajax/machine_get_all_active.php';
                         break;
@@ -89,6 +92,9 @@ if ($route_parts[0] == 'pytyvo') {
                                         break;
                                     case 'city-manager':
                                         $chosen_route = 'app/modules/city/controller/manager.php';
+                                        break;
+                                    case 'neighborhood-manager':
+                                        $chosen_route = 'app/modules/neighborhood/controller/manager.php';
                                         break;
                                 }
                                 break;
@@ -158,6 +164,13 @@ if ($route_parts[0] == 'pytyvo') {
                                         switch ($route_parts[5]) {
                                             case 'maintain':
                                                 $chosen_route = 'app/modules/city/controller/maintain.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'neighborhood-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'maintain':
+                                                $chosen_route = 'app/modules/neighborhood/controller/maintain.php';
                                                 break;
                                         }
                                         break;
@@ -268,6 +281,14 @@ if ($route_parts[0] == 'pytyvo') {
                                             case 'page':
                                                 $page = (int) $route_parts[6];
                                                 $chosen_route = 'app/modules/city/controller/manager.php';
+                                                break;
+                                        }
+                                        break;
+                                    case 'neighborhood-manager':
+                                        switch ($route_parts[5]) {
+                                            case 'page':
+                                                $page = (int) $route_parts[6];
+                                                $chosen_route = 'app/modules/neighborhood/controller/manager.php';
                                                 break;
                                         }
                                         break;
